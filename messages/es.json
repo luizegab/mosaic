@@ -208,6 +208,13 @@
     "accessRequested": "Solicitado",
     "cancelRequest": "Cancelar solicitud",
     "noPublishedEvents": "No hay eventos publicados a los que solicitar acceso.",
+    "requestRoleTitle": "¿Quieres organizar tus propios eventos?",
+    "requestRoleIntro": "Solicita acceso de organizador y un administrador revisará tu solicitud.",
+    "requestRoleMessage": "Mensaje para los administradores (opcional)",
+    "requestRole": "Solicitar acceso de organizador",
+    "roleRequestPending": "Acceso de organizador solicitado",
+    "roleRequests": "Solicitudes de acceso de organizador",
+    "noRoleRequests": "No hay solicitudes de acceso de organizador pendientes.",
     "searchUsers": "Buscar usuarios"
   },
   "questionTypes": {

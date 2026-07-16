@@ -41,19 +41,22 @@ export default async function ConsoleLayout({ children, params }) {
   const hasAccess = (globalRoles?.length ?? 0) > 0 || (eventRoles?.length ?? 0) > 0
 
   if (!hasAccess) {
-    const [{ data: events }, { data: requests }] = await Promise.all([
+    const [{ data: events }, { data: requests }, { data: roleRequest }] = await Promise.all([
       supabase
         .from('events')
         .select('id, name, default_locale, starts_at, ends_at, timezone')
         .eq('status', 'published')
         .order('starts_at', { ascending: true }),
       supabase.from('event_organizers').select('event_id').eq('user_id', user.id),
+      supabase.from('role_requests').select('user_id').eq('user_id', user.id).maybeSingle(),
     ])
     return (
       <div className="container" style={{ paddingBlock: 'var(--s-8)' }}>
         <RequestAccess
           events={events ?? []}
           requestedEventIds={(requests ?? []).map((r) => r.event_id)}
+          userId={user.id}
+          roleRequested={Boolean(roleRequest)}
         />
       </div>
     )

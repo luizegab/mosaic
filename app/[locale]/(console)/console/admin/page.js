@@ -31,20 +31,25 @@ export default async function AdminPage({ params }) {
   }
   const isSuperAdmin = (myRoles ?? []).some((r) => r.role === 'super_admin')
 
-  const [{ data: profiles }, { data: roles }, { data: requests }] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('id, full_name, email, created_at')
-      .order('created_at', { ascending: true }),
-    supabase.from('user_roles').select('user_id, role'),
-    supabase
-      .from('event_organizers')
-      .select(
-        'event_id, user_id, created_at, profiles:user_id ( full_name, email ), events:event_id ( name, default_locale )'
-      )
-      .eq('role', 'requested')
-      .order('created_at', { ascending: true }),
-  ])
+  const [{ data: profiles }, { data: roles }, { data: requests }, { data: roleRequests }] =
+    await Promise.all([
+      supabase
+        .from('profiles')
+        .select('id, full_name, email, created_at')
+        .order('created_at', { ascending: true }),
+      supabase.from('user_roles').select('user_id, role'),
+      supabase
+        .from('event_organizers')
+        .select(
+          'event_id, user_id, created_at, profiles:user_id ( full_name, email ), events:event_id ( name, default_locale )'
+        )
+        .eq('role', 'requested')
+        .order('created_at', { ascending: true }),
+      supabase
+        .from('role_requests')
+        .select('user_id, message, created_at, profiles:user_id ( full_name, email )')
+        .order('created_at', { ascending: true }),
+    ])
 
   const roleByUser = new Map((roles ?? []).map((r) => [r.user_id, r.role]))
   const users = (profiles ?? []).map((p) => ({
@@ -56,6 +61,7 @@ export default async function AdminPage({ params }) {
     <AdminConsole
       users={users}
       requests={requests ?? []}
+      roleRequests={roleRequests ?? []}
       currentUserId={user.id}
       isSuperAdmin={isSuperAdmin}
     />

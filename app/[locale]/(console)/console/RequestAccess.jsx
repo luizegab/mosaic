@@ -6,21 +6,43 @@ import { useRouter } from '@/lib/i18n/navigation'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import { lt } from '@/lib/i18n/locales'
 import { formatEventDateRange } from '@/lib/dates'
-import { Badge, Button } from '@/components/ui'
+import { Badge, Button, Field, Input } from '@/components/ui'
 
 /**
  * Shown in place of the console for signed-in users with no organizer access.
- * Lets them ask for access to a published event; an admin or full organizer
- * approves the request at a chosen level from the admin console or team page.
+ * Lets them ask for access to a published event (approved at a chosen level
+ * from the admin console or team page) or for a global organizer role
+ * (approved from the admin console).
  */
-export function RequestAccess({ events, requestedEventIds }) {
+export function RequestAccess({ events, requestedEventIds, userId, roleRequested }) {
   const t = useTranslations('console')
   const locale = useLocale()
   const router = useRouter()
   const supabase = getSupabaseBrowserClient()
   const [error, setError] = useState(null)
   const [busyId, setBusyId] = useState(null)
+  const [message, setMessage] = useState('')
+  const [busyRole, setBusyRole] = useState(false)
   const requested = new Set(requestedEventIds)
+
+  async function requestRole(e) {
+    e.preventDefault()
+    setError(null)
+    setBusyRole(true)
+    const { error } = await supabase.rpc('request_global_access', { p_message: message })
+    setBusyRole(false)
+    if (error) setError(error.message)
+    else router.refresh()
+  }
+
+  async function cancelRoleRequest() {
+    setError(null)
+    setBusyRole(true)
+    const { error } = await supabase.from('role_requests').delete().eq('user_id', userId)
+    setBusyRole(false)
+    if (error) setError(error.message)
+    else router.refresh()
+  }
 
   async function request(eventId) {
     setError(null)
@@ -96,6 +118,37 @@ export function RequestAccess({ events, requestedEventIds }) {
           </table>
         </div>
       )}
+
+      <section aria-label={t('requestRoleTitle')} style={{ marginBlockStart: 'var(--s-8)' }}>
+        <h2>{t('requestRoleTitle')}</h2>
+        <p style={{ color: 'var(--ink-soft)', marginBlock: 'var(--s-3)' }}>
+          {t('requestRoleIntro')}
+        </p>
+        {roleRequested ? (
+          <p>
+            <Badge tone="draft">{t('roleRequestPending')}</Badge>{' '}
+            <Button variant="ghost" size="sm" disabled={busyRole} onClick={cancelRoleRequest}>
+              {t('cancelRequest')}
+            </Button>
+          </p>
+        ) : (
+          <form onSubmit={requestRole}>
+            <Field label={t('requestRoleMessage')}>
+              {({ id }) => (
+                <Input
+                  id={id}
+                  maxLength={500}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+              )}
+            </Field>
+            <Button type="submit" disabled={busyRole} style={{ marginBlockStart: 'var(--s-3)' }}>
+              {t('requestRole')}
+            </Button>
+          </form>
+        )}
+      </section>
     </div>
   )
 }

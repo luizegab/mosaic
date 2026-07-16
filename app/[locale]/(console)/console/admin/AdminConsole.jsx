@@ -10,7 +10,7 @@ import styles from './admin.module.css'
 
 const GRANTABLE_LEVELS = ['view', 'scholarship', 'checkin', 'update', 'full']
 
-export function AdminConsole({ users, requests, currentUserId, isSuperAdmin }) {
+export function AdminConsole({ users, requests, roleRequests, currentUserId, isSuperAdmin }) {
   const t = useTranslations('console')
   const locale = useLocale()
   const router = useRouter()
@@ -19,6 +19,7 @@ export function AdminConsole({ users, requests, currentUserId, isSuperAdmin }) {
   const [search, setSearch] = useState('')
   const [error, setError] = useState(null)
   const [approveLevels, setApproveLevels] = useState({})
+  const [approveRoles, setApproveRoles] = useState({})
 
   const q = search.trim().toLowerCase()
   const visibleUsers = q
@@ -75,6 +76,19 @@ export function AdminConsole({ users, requests, currentUserId, isSuperAdmin }) {
     )
   }
 
+  function approveRole(request) {
+    run(
+      supabase.rpc('approve_role_request', {
+        p_user_id: request.user_id,
+        p_role: approveRoles[request.user_id] ?? 'organizer',
+      })
+    )
+  }
+
+  function denyRole(request) {
+    run(supabase.from('role_requests').delete().eq('user_id', request.user_id))
+  }
+
   return (
     <div className={styles.wrap}>
       <h1 className="page-title">{t('adminTitle')}</h1>
@@ -126,6 +140,52 @@ export function AdminConsole({ users, requests, currentUserId, isSuperAdmin }) {
                     </tr>
                   )
                 })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      <section className={styles.section} aria-label={t('roleRequests')}>
+        <h2>{t('roleRequests')}</h2>
+        {roleRequests.length === 0 ? (
+          <p className="alert alert-info">{t('noRoleRequests')}</p>
+        ) : (
+          <div className="table-wrap">
+            <table className="table">
+              <tbody>
+                {roleRequests.map((r) => (
+                  <tr key={r.user_id}>
+                    <td>
+                      <strong>{r.profiles?.full_name || '—'}</strong>
+                      <div style={{ color: 'var(--ink-soft)', fontSize: 'var(--text-xs)' }}>
+                        {r.profiles?.email}
+                      </div>
+                    </td>
+                    <td style={{ color: 'var(--ink-soft)' }}>{r.message || '—'}</td>
+                    <td>
+                      <div className={styles.rowActions}>
+                        <NativeSelect
+                          aria-label={t('globalRoleLabel')}
+                          value={approveRoles[r.user_id] ?? 'organizer'}
+                          onChange={(e) =>
+                            setApproveRoles((prev) => ({ ...prev, [r.user_id]: e.target.value }))
+                          }
+                          style={{ width: 'auto' }}
+                        >
+                          <option value="organizer">{t('roleGlobalOrganizer')}</option>
+                          <option value="admin">{t('roleAdmin')}</option>
+                        </NativeSelect>
+                        <Button size="sm" onClick={() => approveRole(r)}>
+                          {t('approve')}
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => denyRole(r)}>
+                          {t('deny')}
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

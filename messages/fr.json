@@ -208,6 +208,13 @@
     "accessRequested": "Demandé",
     "cancelRequest": "Annuler la demande",
     "noPublishedEvents": "Aucun événement publié pour lequel demander un accès.",
+    "requestRoleTitle": "Vous souhaitez organiser vos propres événements ?",
+    "requestRoleIntro": "Demandez un accès organisateur et un administrateur examinera votre demande.",
+    "requestRoleMessage": "Message aux administrateurs (facultatif)",
+    "requestRole": "Demander un accès organisateur",
+    "roleRequestPending": "Accès organisateur demandé",
+    "roleRequests": "Demandes d'accès organisateur",
+    "noRoleRequests": "Aucune demande d'accès organisateur en attente.",
     "searchUsers": "Rechercher des utilisateurs"
   },
   "questionTypes": {

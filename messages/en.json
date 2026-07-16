@@ -208,6 +208,13 @@
     "accessRequested": "Requested",
     "cancelRequest": "Cancel request",
     "noPublishedEvents": "There are no published events to request access to.",
+    "requestRoleTitle": "Want to run your own events?",
+    "requestRoleIntro": "Request organizer access and an administrator will review your request.",
+    "requestRoleMessage": "Message to the administrators (optional)",
+    "requestRole": "Request organizer access",
+    "roleRequestPending": "Organizer access requested",
+    "roleRequests": "Organizer access requests",
+    "noRoleRequests": "No pending organizer access requests.",
     "searchUsers": "Search users"
   },
   "questionTypes": {
