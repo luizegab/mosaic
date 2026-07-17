@@ -51,13 +51,31 @@ export default async function ConsoleLayout({ children, params }) {
       supabase.from('role_requests').select('user_id').eq('user_id', user.id).maybeSingle(),
     ])
     return (
-      <div className="container" style={{ paddingBlock: 'var(--s-8)' }}>
-        <RequestAccess
-          events={events ?? []}
-          requestedEventIds={(requests ?? []).map((r) => r.event_id)}
-          userId={user.id}
-          roleRequested={Boolean(roleRequest)}
-        />
+      <div className={styles.shell}>
+        <header className={styles.topbar}>
+          <Link href="/console" className={styles.brand}>
+            <MosaicMark />
+            <span>{t('console.title')}</span>
+          </Link>
+          <nav className={styles.topnav} aria-label="Console">
+            <Link href="/">{t('console.navHome')} ↗</Link>
+          </nav>
+          <div className={styles.actions}>
+            <LocaleSwitcher label={t('common.language')} />
+            <Link href="/my/profile" className="btn btn-ghost btn-sm">
+              {t('nav.profile')}
+            </Link>
+            <SignOutButton label={t('common.signOut')} />
+          </div>
+        </header>
+        <main className={styles.main}>
+          <RequestAccess
+            events={events ?? []}
+            requestedEventIds={(requests ?? []).map((r) => r.event_id)}
+            userId={user.id}
+            roleRequested={Boolean(roleRequest)}
+          />
+        </main>
       </div>
     )
   }
@@ -71,7 +89,7 @@ export default async function ConsoleLayout({ children, params }) {
             <span>{t('console.title')}</span>
           </Link>
           <nav className={styles.topnav} aria-label="Console">
-<Link href="/">{t('console.navHome')} ↗</Link>
+            <Link href="/">{t('console.navHome')} ↗</Link>
             <Link href="/console">{t('console.navMyEvents')}</Link>
             {isAdmin && <Link href="/console/admin">{t('console.admin')}</Link>}
           </nav>
