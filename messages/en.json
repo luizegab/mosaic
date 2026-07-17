@@ -247,7 +247,9 @@
     "navMyEvents": "My Events",
     "joinEvents": "Join other events",
     "joinEventsHelp": "Request access to events run by others; the event's team or an administrator will approve it.",
-    "noMyEvents": "You haven't created or joined any events yet. Create your first event to get started."
+    "noMyEvents": "You haven't created or joined any events yet. Create your first event to get started.",
+    "joinEventsEmpty": "There are no other events to join right now.",
+    "joinEventsAllAccess": "You already have full access to every event."
   },
   "questionTypes": {
     "text": "Short text",

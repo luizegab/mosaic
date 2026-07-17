@@ -247,7 +247,9 @@
     "navMyEvents": "Mes événements",
     "joinEvents": "Rejoindre d'autres événements",
     "joinEventsHelp": "Demandez l'accès à des événements organisés par d'autres ; l'équipe de l'événement ou un administrateur approuvera la demande.",
-    "noMyEvents": "Vous n'avez encore créé ou rejoint aucun événement. Créez votre premier événement pour commencer."
+    "noMyEvents": "Vous n'avez encore créé ou rejoint aucun événement. Créez votre premier événement pour commencer.",
+    "joinEventsEmpty": "Aucun autre événement à rejoindre pour le moment.",
+    "joinEventsAllAccess": "Vous avez déjà un accès complet à tous les événements."
   },
   "questionTypes": {
     "text": "Texte court",

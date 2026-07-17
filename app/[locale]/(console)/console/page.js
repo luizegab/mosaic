@@ -115,9 +115,11 @@ export default async function ConsoleHome({ params }) {
         </div>
       )}
 
-      {joinable.length > 0 && (
-        <JoinEvents events={joinable} requestedEventIds={requestedIds} />
-      )}
+      <JoinEvents
+        events={joinable}
+        requestedEventIds={requestedIds}
+        allAccess={seesAllEvents}
+      />
 
       {!seesAllEvents && (
         <RequestOrganizerRole userId={user.id} roleRequested={Boolean(roleRequest)} />

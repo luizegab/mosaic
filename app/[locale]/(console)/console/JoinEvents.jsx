@@ -13,7 +13,7 @@ import { Badge, Button } from '@/components/ui'
  * team, or cancel a pending request. Approval happens on the event's Team
  * page or in the admin console.
  */
-export function JoinEvents({ events, requestedEventIds }) {
+export function JoinEvents({ events, requestedEventIds, allAccess = false }) {
   const t = useTranslations('console')
   const locale = useLocale()
   const router = useRouter()
@@ -53,6 +53,11 @@ export function JoinEvents({ events, requestedEventIds }) {
         {t('joinEventsHelp')}
       </p>
       {error && <p className="alert alert-error">{error}</p>}
+      {allAccess ? (
+        <p className="alert alert-info">{t('joinEventsAllAccess')}</p>
+      ) : events.length === 0 ? (
+        <p className="alert alert-info">{t('joinEventsEmpty')}</p>
+      ) : (
       <div className="table-wrap" style={{ maxInlineSize: '44rem' }}>
         <table className="table">
           <tbody>
@@ -93,6 +98,7 @@ export function JoinEvents({ events, requestedEventIds }) {
           </tbody>
         </table>
       </div>
+      )}
     </section>
   )
 }

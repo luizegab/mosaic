@@ -247,7 +247,9 @@
     "navMyEvents": "Mis eventos",
     "joinEvents": "Unirse a otros eventos",
     "joinEventsHelp": "Solicita acceso a eventos organizados por otras personas; el equipo del evento o un administrador aprobará la solicitud.",
-    "noMyEvents": "Aún no has creado ni te has unido a ningún evento. Crea tu primer evento para empezar."
+    "noMyEvents": "Aún no has creado ni te has unido a ningún evento. Crea tu primer evento para empezar.",
+    "joinEventsEmpty": "No hay otros eventos a los que unirse por ahora.",
+    "joinEventsAllAccess": "Ya tienes acceso completo a todos los eventos."
   },
   "questionTypes": {
     "text": "Texto corto",
