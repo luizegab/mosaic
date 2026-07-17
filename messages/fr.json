@@ -176,10 +176,11 @@
     "selectType": "Sélectionner un type de participant",
     "selectTypeHelp": "Ajoutez un type de participant depuis la liste ou créez le vôtre.",
     "customType": "Créer le mien",
-    "viewPublicSite": "Site public",
     "saveFailed": "Échec de l'enregistrement — vos dernières modifications ne sont pas stockées",
     "publishFailed": "Échec de la publication — le formulaire n'a pas été publié",
-    "loadError": "Impossible de charger les participants. Modifiez la recherche ou réessayez."
+    "loadError": "Impossible de charger les participants. Modifiez la recherche ou réessayez.",
+    "navHome": "Accueil",
+    "navMyEvents": "Mes événements"
   },
   "questionTypes": {
     "text": "Texte court",
