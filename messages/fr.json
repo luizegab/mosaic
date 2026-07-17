@@ -95,7 +95,8 @@
     "browseEvents": "Voir les événements",
     "cancelParticipant": "Annuler ce participant",
     "cancelConfirm": "Annuler {name} ? Une personne sur liste d'attente pourrait prendre cette place.",
-    "registeredOn": "Inscrit le {date}"
+    "registeredOn": "Inscrit le {date}",
+    "eventUnavailable": "L'événement n'est plus disponible"
   },
   "console": {
     "title": "Console organisateur",
@@ -175,7 +176,10 @@
     "selectType": "Sélectionner un type de participant",
     "selectTypeHelp": "Ajoutez un type de participant depuis la liste ou créez le vôtre.",
     "customType": "Créer le mien",
-    "viewPublicSite": "Site public"
+    "viewPublicSite": "Site public",
+    "saveFailed": "Échec de l'enregistrement — vos dernières modifications ne sont pas stockées",
+    "publishFailed": "Échec de la publication — le formulaire n'a pas été publié",
+    "loadError": "Impossible de charger les participants. Modifiez la recherche ou réessayez."
   },
   "questionTypes": {
     "text": "Texte court",

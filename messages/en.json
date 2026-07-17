@@ -95,7 +95,8 @@
     "browseEvents": "Browse events",
     "cancelParticipant": "Cancel this participant",
     "cancelConfirm": "Cancel {name}? A waitlisted participant may take this spot.",
-    "registeredOn": "Registered {date}"
+    "registeredOn": "Registered {date}",
+    "eventUnavailable": "Event no longer available"
   },
   "console": {
     "title": "Organizer console",
@@ -175,7 +176,10 @@
     "selectType": "Select a participant type",
     "selectTypeHelp": "Add a participant type from the list below, or create your own.",
     "customType": "Create my own",
-    "viewPublicSite": "Public site"
+    "viewPublicSite": "Public site",
+    "saveFailed": "Saving failed — your latest changes are not stored",
+    "publishFailed": "Publishing failed — the form was not published",
+    "loadError": "Could not load participants. Adjust your search or try again."
   },
   "questionTypes": {
     "text": "Short text",
