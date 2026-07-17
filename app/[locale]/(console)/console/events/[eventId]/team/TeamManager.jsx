@@ -5,27 +5,26 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from '@/lib/i18n/navigation'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import { Button, Field, Input, NativeSelect } from '@/components/ui'
+import { RoleMatrix } from '@/components/roles/RoleMatrix'
+import { roleLabel, sortRoles } from '@/components/roles/roleUtils'
 import styles from './team.module.css'
 
-const GRANTABLE_LEVELS = ['view', 'scholarship', 'checkin', 'update', 'full']
-
-function levelKey(level) {
-  return `level${level.charAt(0).toUpperCase()}${level.slice(1)}`
-}
-
-export function TeamManager({ eventId, initialMembers }) {
+export function TeamManager({ eventId, orgId, initialMembers, roles }) {
   const t = useTranslations('console')
   const tCommon = useTranslations('common')
   const router = useRouter()
   const supabase = getSupabaseBrowserClient()
 
-  const [email, setEmail] = useState('')
-  const [role, setRole] = useState('view')
-  const [error, setError] = useState(null)
-  const [approveLevels, setApproveLevels] = useState({})
+  const assignableRoles = sortRoles(roles)
+  const defaultRoleId = assignableRoles.find((r) => r.preset_key === 'view')?.id
 
-  const members = initialMembers.filter((m) => m.role !== 'requested')
-  const requests = initialMembers.filter((m) => m.role === 'requested')
+  const [email, setEmail] = useState('')
+  const [roleId, setRoleId] = useState(defaultRoleId ?? '')
+  const [error, setError] = useState(null)
+  const [approveRoleIds, setApproveRoleIds] = useState({})
+
+  const members = initialMembers.filter((m) => m.status === 'active')
+  const requests = initialMembers.filter((m) => m.status === 'requested')
 
   async function run(promise) {
     setError(null)
@@ -34,23 +33,32 @@ export function TeamManager({ eventId, initialMembers }) {
     else router.refresh()
   }
 
+  function roleOptions() {
+    return assignableRoles.map((role) => (
+      <option key={role.id} value={role.id}>
+        {roleLabel(role, t)}
+        {role.event_id ? ` (${t('rolesEventGroup')})` : ''}
+      </option>
+    ))
+  }
+
   async function add(e) {
     e.preventDefault()
     await run(
       supabase.rpc('add_event_organizer', {
         p_event_id: eventId,
         p_email: email,
-        p_role: role,
+        p_role_id: roleId,
       })
     )
     setEmail('')
   }
 
-  function changeLevel(userId, level) {
+  function changeRole(userId, newRoleId) {
     run(
       supabase
         .from('event_organizers')
-        .update({ role: level })
+        .update({ role_id: newRoleId, status: 'active' })
         .eq('event_id', eventId)
         .eq('user_id', userId)
     )
@@ -67,7 +75,7 @@ export function TeamManager({ eventId, initialMembers }) {
   }
 
   function approve(userId) {
-    changeLevel(userId, approveLevels[userId] ?? 'view')
+    changeRole(userId, approveRoleIds[userId] ?? defaultRoleId)
   }
 
   return (
@@ -86,15 +94,11 @@ export function TeamManager({ eventId, initialMembers }) {
         </Field>
         <NativeSelect
           aria-label={t('accessLevel')}
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
+          value={roleId}
+          onChange={(e) => setRoleId(e.target.value)}
           style={{ width: 'auto' }}
         >
-          {GRANTABLE_LEVELS.map((level) => (
-            <option key={level} value={level}>
-              {t(levelKey(level))}
-            </option>
-          ))}
+          {roleOptions()}
         </NativeSelect>
         <Button type="submit">{tCommon('submit')}</Button>
       </form>
@@ -103,7 +107,7 @@ export function TeamManager({ eventId, initialMembers }) {
       {requests.length > 0 && (
         <section aria-label={t('accessRequests')}>
           <h2>{t('accessRequests')}</h2>
-          <div className="table-wrap" style={{ maxInlineSize: '40rem' }}>
+          <div className="table-wrap" style={{ maxInlineSize: '44rem' }}>
             <table className="table">
               <tbody>
                 {requests.map((m) => (
@@ -117,20 +121,16 @@ export function TeamManager({ eventId, initialMembers }) {
                     <td style={{ textAlign: 'end' }}>
                       <NativeSelect
                         aria-label={t('accessLevel')}
-                        value={approveLevels[m.user_id] ?? 'view'}
+                        value={approveRoleIds[m.user_id] ?? defaultRoleId ?? ''}
                         onChange={(e) =>
-                          setApproveLevels((prev) => ({
+                          setApproveRoleIds((prev) => ({
                             ...prev,
                             [m.user_id]: e.target.value,
                           }))
                         }
                         style={{ width: 'auto' }}
                       >
-                        {GRANTABLE_LEVELS.map((level) => (
-                          <option key={level} value={level}>
-                            {t(levelKey(level))}
-                          </option>
-                        ))}
+                        {roleOptions()}
                       </NativeSelect>{' '}
                       <Button size="sm" onClick={() => approve(m.user_id)}>
                         {t('approve')}
@@ -147,7 +147,7 @@ export function TeamManager({ eventId, initialMembers }) {
         </section>
       )}
 
-      <div className="table-wrap" style={{ maxInlineSize: '40rem' }}>
+      <div className="table-wrap" style={{ maxInlineSize: '44rem' }}>
         <table className="table">
           <tbody>
             {members.map((m) => (
@@ -161,15 +161,11 @@ export function TeamManager({ eventId, initialMembers }) {
                 <td>
                   <NativeSelect
                     aria-label={t('accessLevel')}
-                    value={m.role}
-                    onChange={(e) => changeLevel(m.user_id, e.target.value)}
+                    value={m.role_id ?? ''}
+                    onChange={(e) => changeRole(m.user_id, e.target.value)}
                     style={{ width: 'auto' }}
                   >
-                    {GRANTABLE_LEVELS.map((level) => (
-                      <option key={level} value={level}>
-                        {t(levelKey(level))}
-                      </option>
-                    ))}
+                    {roleOptions()}
                   </NativeSelect>
                 </td>
                 <td style={{ textAlign: 'end' }}>
@@ -183,16 +179,13 @@ export function TeamManager({ eventId, initialMembers }) {
         </table>
       </div>
 
-      <details>
-        <summary>{t('levelLegend')}</summary>
-        <ul style={{ color: 'var(--ink-soft)', fontSize: 'var(--text-sm)', paddingInlineStart: 'var(--s-5)' }}>
-          {GRANTABLE_LEVELS.map((level) => (
-            <li key={level}>
-              <strong>{t(levelKey(level))}</strong> — {t(`${levelKey(level)}Desc`)}
-            </li>
-          ))}
-        </ul>
-      </details>
+      <section aria-label={t('roles')}>
+        <h2>{t('customRolesEvent')}</h2>
+        <p style={{ color: 'var(--ink-soft)', fontSize: 'var(--text-sm)' }}>
+          {t('customRolesEventHelp')}
+        </p>
+        <RoleMatrix roles={roles} orgId={orgId} eventId={eventId} />
+      </section>
     </div>
   )
 }

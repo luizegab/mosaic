@@ -22,7 +22,8 @@
     "myRegistrations": "Mes inscriptions",
     "console": "Console organisateur",
     "home": "Accueil",
-    "profile": "Profil"
+    "profile": "Profil",
+    "adminConsole": "Console d'administration"
   },
   "auth": {
     "title": "Bienvenue sur Mosaic",
@@ -217,7 +218,28 @@
     "roleRequestPending": "Accès organisateur demandé",
     "roleRequests": "Demandes d'accès organisateur",
     "noRoleRequests": "Aucune demande d'accès organisateur en attente.",
-    "searchUsers": "Rechercher des utilisateurs"
+    "searchUsers": "Rechercher des utilisateurs",
+    "roles": "Rôles et privilèges",
+    "rolesHelp": "Ce que permet chaque rôle. Les rôles standard sont fixes ; les rôles personnalisés peuvent être renommés, modifiés et supprimés tant qu'ils ne sont pas utilisés.",
+    "standardRole": "Standard",
+    "rolesGlobalGroup": "Tous les événements",
+    "rolesEventGroup": "cet événement",
+    "customRolesEvent": "Rôles personnalisés de cet événement",
+    "customRolesEventHelp": "Définissez des rôles disponibles uniquement pour cet événement. Les rôles marqués « Tous les événements » se gèrent depuis la console d'administration.",
+    "roleName": "Rôle",
+    "newRole": "Nom du nouveau rôle",
+    "createRole": "Créer",
+    "saveRole": "Enregistrer",
+    "deleteRole": "Supprimer",
+    "roleInUse": "Ce rôle est encore attribué à au moins un membre de l'équipe.",
+    "privView": "Consultation",
+    "privScholarship": "Bourses",
+    "privAddRegistrants": "Ajouter des inscrits",
+    "privManagePayments": "Paiements",
+    "privCheckin": "Enregistrement",
+    "privUpdateEvent": "Modifier l'événement",
+    "privDeleteRegistrants": "Supprimer des inscrits",
+    "privManageTeam": "Équipe"
   },
   "questionTypes": {
     "text": "Texte court",

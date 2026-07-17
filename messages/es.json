@@ -22,7 +22,8 @@
     "myRegistrations": "Mis inscripciones",
     "console": "Consola del organizador",
     "home": "Inicio",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "adminConsole": "Consola de administración"
   },
   "auth": {
     "title": "Bienvenido a Mosaic",
@@ -217,7 +218,28 @@
     "roleRequestPending": "Acceso de organizador solicitado",
     "roleRequests": "Solicitudes de acceso de organizador",
     "noRoleRequests": "No hay solicitudes de acceso de organizador pendientes.",
-    "searchUsers": "Buscar usuarios"
+    "searchUsers": "Buscar usuarios",
+    "roles": "Roles y privilegios",
+    "rolesHelp": "Qué permite cada rol. Los roles estándar son fijos; los roles personalizados se pueden renombrar, editar y eliminar mientras no estén en uso.",
+    "standardRole": "Estándar",
+    "rolesGlobalGroup": "Todos los eventos",
+    "rolesEventGroup": "este evento",
+    "customRolesEvent": "Roles personalizados de este evento",
+    "customRolesEventHelp": "Define roles disponibles solo en este evento. Los roles marcados como «Todos los eventos» se gestionan desde la consola de administración.",
+    "roleName": "Rol",
+    "newRole": "Nombre del nuevo rol",
+    "createRole": "Crear",
+    "saveRole": "Guardar",
+    "deleteRole": "Eliminar",
+    "roleInUse": "Este rol todavía está asignado a al menos un miembro del equipo.",
+    "privView": "Ver",
+    "privScholarship": "Becas",
+    "privAddRegistrants": "Añadir inscritos",
+    "privManagePayments": "Pagos",
+    "privCheckin": "Check-in",
+    "privUpdateEvent": "Editar evento",
+    "privDeleteRegistrants": "Eliminar inscritos",
+    "privManageTeam": "Equipo"
   },
   "questionTypes": {
     "text": "Texto corto",

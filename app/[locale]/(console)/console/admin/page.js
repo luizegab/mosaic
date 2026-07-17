@@ -31,25 +31,37 @@ export default async function AdminPage({ params }) {
   }
   const isSuperAdmin = (myRoles ?? []).some((r) => r.role === 'super_admin')
 
-  const [{ data: profiles }, { data: roles }, { data: requests }, { data: roleRequests }] =
-    await Promise.all([
-      supabase
-        .from('profiles')
-        .select('id, full_name, email, created_at')
-        .order('created_at', { ascending: true }),
-      supabase.from('user_roles').select('user_id, role'),
-      supabase
-        .from('event_organizers')
-        .select(
-          'event_id, user_id, created_at, profiles:user_id ( full_name, email ), events:event_id ( name, default_locale )'
-        )
-        .eq('role', 'requested')
-        .order('created_at', { ascending: true }),
-      supabase
-        .from('role_requests')
-        .select('user_id, message, created_at, profiles:user_id ( full_name, email )')
-        .order('created_at', { ascending: true }),
-    ])
+  const [
+    { data: org },
+    { data: profiles },
+    { data: roles },
+    { data: requests },
+    { data: roleRequests },
+    { data: eventRoles },
+  ] = await Promise.all([
+    supabase.from('organizations').select('id').order('created_at').limit(1).maybeSingle(),
+    supabase
+      .from('profiles')
+      .select('id, full_name, email, created_at')
+      .order('created_at', { ascending: true }),
+    supabase.from('user_roles').select('user_id, role'),
+    supabase
+      .from('event_organizers')
+      .select('event_id, user_id, created_at, events:event_id ( name, default_locale )')
+      .eq('status', 'requested')
+      .order('created_at', { ascending: true }),
+    supabase
+      .from('role_requests')
+      .select('user_id, message, created_at')
+      .order('created_at', { ascending: true }),
+    // presets + global custom roles for the matrix and approval dropdowns
+    supabase.from('event_roles').select('*').is('event_id', null),
+  ])
+
+  // No FK between *.user_id and profiles (both reference auth.users), so
+  // PostgREST can't embed profiles — join in application code instead.
+  const profileById = new Map((profiles ?? []).map((p) => [p.id, p]))
+  const withProfile = (row) => ({ ...row, profiles: profileById.get(row.user_id) ?? null })
 
   const roleByUser = new Map((roles ?? []).map((r) => [r.user_id, r.role]))
   const users = (profiles ?? []).map((p) => ({
@@ -60,8 +72,10 @@ export default async function AdminPage({ params }) {
   return (
     <AdminConsole
       users={users}
-      requests={requests ?? []}
-      roleRequests={roleRequests ?? []}
+      requests={(requests ?? []).map(withProfile)}
+      roleRequests={(roleRequests ?? []).map(withProfile)}
+      eventRoles={eventRoles ?? []}
+      orgId={org?.id ?? null}
       currentUserId={user.id}
       isSuperAdmin={isSuperAdmin}
     />

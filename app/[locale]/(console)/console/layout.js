@@ -32,7 +32,7 @@ export default async function ConsoleLayout({ children, params }) {
       .from('event_organizers')
       .select('event_id')
       .eq('user_id', user.id)
-      .neq('role', 'requested')
+      .eq('status', 'active')
       .limit(1),
   ])
   const isAdmin = (globalRoles ?? []).some(

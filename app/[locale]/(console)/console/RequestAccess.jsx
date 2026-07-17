@@ -62,7 +62,7 @@ export function RequestAccess({ events, requestedEventIds, userId, roleRequested
       .from('event_organizers')
       .delete()
       .eq('event_id', eventId)
-      .eq('role', 'requested')
+      .eq('status', 'requested')
     setBusyId(null)
     if (error) setError(error.message)
     else router.refresh()

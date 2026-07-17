@@ -22,7 +22,8 @@
     "myRegistrations": "Мої реєстрації",
     "console": "Консоль організатора",
     "home": "Головна",
-    "profile": "Профіль"
+    "profile": "Профіль",
+    "adminConsole": "Панель адміністратора"
   },
   "auth": {
     "title": "Ласкаво просимо до Mosaic",
@@ -217,7 +218,28 @@
     "roleRequestPending": "Доступ організатора запитано",
     "roleRequests": "Запити на доступ організатора",
     "noRoleRequests": "Немає запитів на доступ організатора в очікуванні.",
-    "searchUsers": "Пошук користувачів"
+    "searchUsers": "Пошук користувачів",
+    "roles": "Ролі та привілеї",
+    "rolesHelp": "Що дозволяє кожна роль. Стандартні ролі фіксовані; власні ролі можна перейменовувати, змінювати та видаляти, поки вони не використовуються.",
+    "standardRole": "Стандартна",
+    "rolesGlobalGroup": "Усі події",
+    "rolesEventGroup": "ця подія",
+    "customRolesEvent": "Власні ролі цієї події",
+    "customRolesEventHelp": "Визначте ролі, доступні лише для цієї події. Ролі з позначкою «Усі події» керуються з панелі адміністратора.",
+    "roleName": "Роль",
+    "newRole": "Назва нової ролі",
+    "createRole": "Створити",
+    "saveRole": "Зберегти",
+    "deleteRole": "Видалити",
+    "roleInUse": "Ця роль усе ще призначена принаймні одному учаснику команди.",
+    "privView": "Перегляд",
+    "privScholarship": "Стипендії",
+    "privAddRegistrants": "Додавання учасників",
+    "privManagePayments": "Платежі",
+    "privCheckin": "Реєстрація прибуття",
+    "privUpdateEvent": "Зміна події",
+    "privDeleteRegistrants": "Видалення учасників",
+    "privManageTeam": "Команда"
   },
   "questionTypes": {
     "text": "Короткий текст",

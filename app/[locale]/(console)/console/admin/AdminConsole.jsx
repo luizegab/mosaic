@@ -6,11 +6,19 @@ import { useRouter } from '@/lib/i18n/navigation'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import { lt } from '@/lib/i18n/locales'
 import { Badge, Button, Input, NativeSelect } from '@/components/ui'
+import { RoleMatrix } from '@/components/roles/RoleMatrix'
+import { roleLabel, sortRoles } from '@/components/roles/roleUtils'
 import styles from './admin.module.css'
 
-const GRANTABLE_LEVELS = ['view', 'scholarship', 'checkin', 'update', 'full']
-
-export function AdminConsole({ users, requests, roleRequests, currentUserId, isSuperAdmin }) {
+export function AdminConsole({
+  users,
+  requests,
+  roleRequests,
+  eventRoles,
+  orgId,
+  currentUserId,
+  isSuperAdmin,
+}) {
   const t = useTranslations('console')
   const locale = useLocale()
   const router = useRouter()
@@ -18,8 +26,11 @@ export function AdminConsole({ users, requests, roleRequests, currentUserId, isS
 
   const [search, setSearch] = useState('')
   const [error, setError] = useState(null)
-  const [approveLevels, setApproveLevels] = useState({})
-  const [approveRoles, setApproveRoles] = useState({})
+  const [approveLevels, setApproveLevels] = useState({}) // request key -> role id
+  const [approveRoles, setApproveRoles] = useState({}) // user id -> global role
+
+  const assignableRoles = sortRoles(eventRoles)
+  const defaultRoleId = assignableRoles.find((r) => r.preset_key === 'view')?.id
 
   const q = search.trim().toLowerCase()
   const visibleUsers = q
@@ -54,14 +65,15 @@ export function AdminConsole({ users, requests, roleRequests, currentUserId, isS
 
   function approve(request) {
     const key = `${request.event_id}:${request.user_id}`
-    const level = approveLevels[key] ?? 'view'
+    const roleId = approveLevels[key] ?? defaultRoleId
+    if (!roleId) return
     run(
       supabase
         .from('event_organizers')
-        .update({ role: level })
+        .update({ role_id: roleId, status: 'active' })
         .eq('event_id', request.event_id)
         .eq('user_id', request.user_id)
-        .eq('role', 'requested')
+        .eq('status', 'requested')
     )
   }
 
@@ -72,7 +84,7 @@ export function AdminConsole({ users, requests, roleRequests, currentUserId, isS
         .delete()
         .eq('event_id', request.event_id)
         .eq('user_id', request.user_id)
-        .eq('role', 'requested')
+        .eq('status', 'requested')
     )
   }
 
@@ -117,15 +129,15 @@ export function AdminConsole({ users, requests, roleRequests, currentUserId, isS
                         <div className={styles.rowActions}>
                           <NativeSelect
                             aria-label={t('accessLevel')}
-                            value={approveLevels[key] ?? 'view'}
+                            value={approveLevels[key] ?? defaultRoleId ?? ''}
                             onChange={(e) =>
                               setApproveLevels((prev) => ({ ...prev, [key]: e.target.value }))
                             }
                             style={{ width: 'auto' }}
                           >
-                            {GRANTABLE_LEVELS.map((level) => (
-                              <option key={level} value={level} title={t(`${levelKey(level)}Desc`)}>
-                                {t(levelKey(level))}
+                            {assignableRoles.map((role) => (
+                              <option key={role.id} value={role.id}>
+                                {roleLabel(role, t)}
                               </option>
                             ))}
                           </NativeSelect>
@@ -190,6 +202,16 @@ export function AdminConsole({ users, requests, roleRequests, currentUserId, isS
             </table>
           </div>
         )}
+      </section>
+
+      <section className={styles.section} aria-label={t('roles')}>
+        <div>
+          <h2>{t('roles')}</h2>
+          <p style={{ color: 'var(--ink-soft)', fontSize: 'var(--text-sm)' }}>
+            {t('rolesHelp')}
+          </p>
+        </div>
+        <RoleMatrix roles={eventRoles} orgId={orgId} eventId={null} />
       </section>
 
       <section className={styles.section} aria-label={t('adminUsers')}>
@@ -261,8 +283,4 @@ export function AdminConsole({ users, requests, roleRequests, currentUserId, isS
       </section>
     </div>
   )
-}
-
-function levelKey(level) {
-  return `level${level.charAt(0).toUpperCase()}${level.slice(1)}`
 }

@@ -22,7 +22,8 @@
     "myRegistrations": "My registrations",
     "console": "Organizer console",
     "home": "Home",
-    "profile": "Profile"
+    "profile": "Profile",
+    "adminConsole": "Admin console"
   },
   "auth": {
     "title": "Welcome to Mosaic",
@@ -217,7 +218,28 @@
     "roleRequestPending": "Organizer access requested",
     "roleRequests": "Organizer access requests",
     "noRoleRequests": "No pending organizer access requests.",
-    "searchUsers": "Search users"
+    "searchUsers": "Search users",
+    "roles": "Roles & privileges",
+    "rolesHelp": "What each role allows. Standard roles are fixed; custom roles can be renamed, edited, and deleted while unused.",
+    "standardRole": "Standard",
+    "rolesGlobalGroup": "All events",
+    "rolesEventGroup": "this event",
+    "customRolesEvent": "Custom roles for this event",
+    "customRolesEventHelp": "Define roles available only on this event. Roles marked “All events” are managed from the admin console.",
+    "roleName": "Role",
+    "newRole": "New role name",
+    "createRole": "Create",
+    "saveRole": "Save",
+    "deleteRole": "Delete",
+    "roleInUse": "This role is still assigned to at least one team member.",
+    "privView": "View",
+    "privScholarship": "Scholarships",
+    "privAddRegistrants": "Add registrants",
+    "privManagePayments": "Payments",
+    "privCheckin": "Check-in",
+    "privUpdateEvent": "Edit event",
+    "privDeleteRegistrants": "Delete registrants",
+    "privManageTeam": "Team"
   },
   "questionTypes": {
     "text": "Short text",
