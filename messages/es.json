@@ -174,7 +174,22 @@
     "contactWebsite": "Sitio web",
     "selectType": "Seleccionar tipo de participante",
     "selectTypeHelp": "Añade un tipo de participante de la lista o crea el tuyo propio.",
-    "customType": "Crear el mío propio"
+    "customType": "Crear el mío propio",
+    "eventPage": "Página del evento",
+    "publicLink": "Enlace público",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "¡Copiado!",
+    "openPage": "Abrir página",
+    "draftNote": "Este evento es un borrador — la página pública se activará cuando lo publiques.",
+    "previewHint": "Estás viendo la página como la ven los asistentes. Pasa el cursor sobre cualquier parte para editarla.",
+    "saveError": "No se pudo guardar",
+    "edit": "Editar",
+    "editDatesInSettings": "Editar fechas en Configuración",
+    "addCover": "Añadir imagen de portada",
+    "changeCover": "Cambiar imagen de portada",
+    "addLocation": "Añadir ubicación",
+    "addContact": "Añadir contacto",
+    "addDescription": "Añadir descripción"
   },
   "questionTypes": {
     "text": "Texto corto",

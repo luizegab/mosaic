@@ -174,7 +174,22 @@
     "contactWebsite": "Website",
     "selectType": "Select a participant type",
     "selectTypeHelp": "Add a participant type from the list below, or create your own.",
-    "customType": "Create my own"
+    "customType": "Create my own",
+    "eventPage": "Event Page",
+    "publicLink": "Public link",
+    "copyLink": "Copy link",
+    "linkCopied": "Copied!",
+    "openPage": "Open page",
+    "draftNote": "This event is a draft — the public page goes live when you publish it.",
+    "previewHint": "You're seeing the page as attendees see it. Hover over any part to edit it.",
+    "saveError": "Couldn't save",
+    "edit": "Edit",
+    "editDatesInSettings": "Edit dates in Settings",
+    "addCover": "Add cover image",
+    "changeCover": "Change cover image",
+    "addLocation": "Add a location",
+    "addContact": "Add contact info",
+    "addDescription": "Add a description"
   },
   "questionTypes": {
     "text": "Short text",
