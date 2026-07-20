@@ -149,6 +149,7 @@ export function EventPageEditor({ initialEvent }) {
   const [copied, setCopied] = useState(false)
   const [uploading, setUploading] = useState(0)
   const [uploadError, setUploadError] = useState('')
+  const [saveErrorMsg, setSaveErrorMsg] = useState('')
   const coverInputRef = useRef(null)
   const aboutImgInputRef = useRef(null)
   const agendaImgInputRef = useRef(null)
@@ -240,6 +241,7 @@ export function EventPageEditor({ initialEvent }) {
 
   async function save() {
     setSaveState('saving')
+    setSaveErrorMsg('')
     const { error } = await supabase
       .from('events')
       .update({
@@ -254,6 +256,8 @@ export function EventPageEditor({ initialEvent }) {
       .eq('id', event.id)
     if (error) {
       setSaveState('error')
+      // Surface the real cause (e.g. a missing column) instead of a bare icon.
+      setSaveErrorMsg(error.message || t('saveError'))
     } else {
       setSaveState('saved')
       setDirty(false)
@@ -956,6 +960,9 @@ export function EventPageEditor({ initialEvent }) {
               {sectionRenderers[panelSection]?.()}
             </div>
             <div className={styles.panelFoot}>
+              {saveErrorMsg && (
+                <p className={`alert alert-error ${styles.uploadNote}`}>{saveErrorMsg}</p>
+              )}
               <Button onClick={save} disabled={saveState === 'saving' || !dirty}>
                 {t('savePage')}
               </Button>
