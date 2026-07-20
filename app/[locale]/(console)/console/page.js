@@ -5,7 +5,6 @@ import { lt } from '@/lib/i18n/locales'
 import { formatEventDateRange } from '@/lib/dates'
 import { Badge } from '@/components/ui'
 import { NewEventButton } from './NewEventButton'
-import { JoinEvents } from './JoinEvents'
 import styles from './console.module.css'
 
 export const dynamic = 'force-dynamic'
@@ -33,9 +32,7 @@ export default async function ConsoleHome({ params }) {
   const activeIds = (memberships ?? [])
     .filter((m) => m.status === 'active')
     .map((m) => m.event_id)
-  const requestedIds = (memberships ?? [])
-    .filter((m) => m.status === 'requested')
-    .map((m) => m.event_id)
+
 
   // "My events": events the user has an active role on; admins and global
   // organizers see all. (RLS also exposes published events to everyone,
@@ -58,17 +55,6 @@ export default async function ConsoleHome({ params }) {
     if (row.status === 'confirmed' || row.status === 'waitlisted') {
       totals.set(row.event_id, (totals.get(row.event_id) ?? 0) + row.n)
     }
-  }
-
-  // Published events the user isn't on: offered for access requests.
-  let joinable = []
-  if (!seesAllEvents) {
-    const { data: published } = await supabase
-      .from('events')
-      .select('id, name, default_locale, timezone, starts_at, ends_at')
-      .eq('status', 'published')
-      .order('starts_at', { ascending: true })
-    joinable = (published ?? []).filter((e) => !activeIds.includes(e.id))
   }
 
   return (
@@ -112,12 +98,6 @@ export default async function ConsoleHome({ params }) {
           </table>
         </div>
       )}
-
-      <JoinEvents
-        events={joinable}
-        requestedEventIds={requestedIds}
-        allAccess={seesAllEvents}
-      />
     </>
   )
 }
