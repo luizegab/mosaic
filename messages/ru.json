@@ -268,7 +268,11 @@
     "chipBackground": "Цвет фона плашки",
     "chipTextColor": "Цвет текста плашки",
     "heroBackground": "Цвет фона шапки",
-    "heroOpacity": "Прозрачность фона"
+    "heroOpacity": "Прозрачность фона",
+    "titleAlign": "Выравнивание заголовка",
+    "alignLeft": "Слева",
+    "alignCenter": "По центру",
+    "alignRight": "Справа"
   },
   "questionTypes": {
     "text": "Короткий текст",

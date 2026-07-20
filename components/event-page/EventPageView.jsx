@@ -231,7 +231,10 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
         {coverUrl && heroTint && (
           <div className={styles.heroTint} style={{ background: heroTint }} aria-hidden="true" />
         )}
-        <div className={`container ${styles.heroInner}`}>
+        <div
+          className={`container ${styles.heroInner}`}
+          data-align={theme.title_align || undefined}
+        >
           {hero.show_chip !== false && (
             <span
               className={styles.heroChip}

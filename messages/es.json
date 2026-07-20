@@ -268,7 +268,11 @@
     "chipBackground": "Color de fondo de la etiqueta",
     "chipTextColor": "Color del texto de la etiqueta",
     "heroBackground": "Color de fondo de la portada",
-    "heroOpacity": "Opacidad del fondo"
+    "heroOpacity": "Opacidad del fondo",
+    "titleAlign": "Alineación del título",
+    "alignLeft": "Izquierda",
+    "alignCenter": "Centro",
+    "alignRight": "Derecha"
   },
   "questionTypes": {
     "text": "Texto corto",

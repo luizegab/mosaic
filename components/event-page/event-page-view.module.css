@@ -121,6 +121,16 @@
   align-content: center;
 }
 
+.heroInner[data-align='center'] {
+  justify-items: center;
+  text-align: center;
+}
+
+.heroInner[data-align='right'] {
+  justify-items: end;
+  text-align: right;
+}
+
 .heroChip {
   display: inline-flex;
   align-items: center;

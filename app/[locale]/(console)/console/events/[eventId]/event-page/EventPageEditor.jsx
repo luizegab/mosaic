@@ -431,6 +431,17 @@ export function EventPageEditor({ initialEvent }) {
           style={{ size: theme.title_size, font: theme.title_font }}
           onChange={(s) => setTheme({ title_size: s.size, title_font: s.font })}
         />
+        <div className={styles.colorField}>
+          <span className="field-label">{t('titleAlign')}</span>
+          <NativeSelect
+            value={theme.title_align ?? 'left'}
+            onChange={(e) => setTheme({ title_align: e.target.value })}
+          >
+            <option value="left">{t('alignLeft')}</option>
+            <option value="center">{t('alignCenter')}</option>
+            <option value="right">{t('alignRight')}</option>
+          </NativeSelect>
+        </div>
       </>
     )
   }
