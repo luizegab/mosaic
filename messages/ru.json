@@ -276,7 +276,8 @@
     "registerButtonStyle": "Кнопка «Регистрация»",
     "buttonBackground": "Цвет фона кнопки",
     "buttonTextColor": "Цвет текста кнопки",
-    "roleColor": "Цвет роли"
+    "roleColor": "Цвет роли",
+    "showHeroAgendaBtn": "Показывать кнопку «Просмотреть программу» в шапке"
   },
   "questionTypes": {
     "text": "Короткий текст",

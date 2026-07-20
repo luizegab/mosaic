@@ -276,7 +276,8 @@
     "registerButtonStyle": "\"Register\" Button",
     "buttonBackground": "Button Background Color",
     "buttonTextColor": "Button Text Color",
-    "roleColor": "Role Color"
+    "roleColor": "Role Color",
+    "showHeroAgendaBtn": "Show \"View Agenda\" Button in Hero"
   },
   "questionTypes": {
     "text": "Short text",

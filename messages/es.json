@@ -276,7 +276,8 @@
     "registerButtonStyle": "Botón \"Registrarse\"",
     "buttonBackground": "Color de fondo del botón",
     "buttonTextColor": "Color del texto del botón",
-    "roleColor": "Color del cargo"
+    "roleColor": "Color del cargo",
+    "showHeroAgendaBtn": "Mostrar botón \"Ver agenda\" en la portada"
   },
   "questionTypes": {
     "text": "Texto corto",

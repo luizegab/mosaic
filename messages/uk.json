@@ -276,7 +276,8 @@
     "registerButtonStyle": "Кнопка «Реєстрація»",
     "buttonBackground": "Колір фону кнопки",
     "buttonTextColor": "Колір тексту кнопки",
-    "roleColor": "Колір ролі"
+    "roleColor": "Колір ролі",
+    "showHeroAgendaBtn": "Показувати кнопку «Переглянути програму» в шапці"
   },
   "questionTypes": {
     "text": "Короткий текст",

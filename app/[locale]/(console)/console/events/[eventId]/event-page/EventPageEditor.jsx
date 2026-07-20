@@ -743,6 +743,11 @@ export function EventPageEditor({ initialEvent }) {
       <>
         {sectionHeader('agenda')}
         {headingEditor('agenda')}
+        <CheckboxRow
+          label={t('showHeroAgendaBtn')}
+          checked={agenda.show_hero_button !== false}
+          onCheckedChange={(checked) => patchContent('agenda', { show_hero_button: !!checked })}
+        />
         <input ref={agendaImgInputRef} type="file" accept="image/*" hidden onChange={onAgendaImgFile} />
         {agenda.image_path && (
           /* eslint-disable-next-line @next/next/no-img-element */

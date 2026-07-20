@@ -276,7 +276,8 @@
     "registerButtonStyle": "Bouton \"S'inscrire\"",
     "buttonBackground": "Couleur de fond du bouton",
     "buttonTextColor": "Couleur du texte du bouton",
-    "roleColor": "Couleur du rôle"
+    "roleColor": "Couleur du rôle",
+    "showHeroAgendaBtn": "Afficher le bouton \"Voir l'agenda\" dans l'en-tête"
   },
   "questionTypes": {
     "text": "Texte court",

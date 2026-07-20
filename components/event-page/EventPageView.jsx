@@ -265,7 +265,7 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
             ) : (
               registerButton
             )}
-            {showAgenda && (
+            {showAgenda && agenda.show_hero_button !== false && (
               <a className={`btn ${styles.heroGhostBtn}`} href="#agenda">
                 {t('viewAgenda')}
               </a>
