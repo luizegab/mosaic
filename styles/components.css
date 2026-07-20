@@ -201,14 +201,14 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--ink-soft);
-  padding: clamp(var(--s-2), 1vw, var(--s-3)) clamp(var(--s-2), 1.5vw, var(--s-4));
+  padding: var(--s-3) var(--s-4);
   border-bottom: 1px solid var(--line-strong);
   background: var(--surface-sunken);
   white-space: nowrap;
 }
 
 .table td {
-  padding: clamp(var(--s-2), 1vw, var(--s-3)) clamp(var(--s-2), 1.5vw, var(--s-4));
+  padding: var(--s-3) var(--s-4);
   border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
