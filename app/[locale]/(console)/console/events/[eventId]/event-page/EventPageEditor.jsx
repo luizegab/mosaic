@@ -17,6 +17,19 @@ function newId() {
   return Math.random().toString(36).slice(2, 10)
 }
 
+function useIsDarkMode() {
+  const [isDark, setIsDark] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    setIsDark(media.matches)
+    const listener = (e) => setIsDark(e.matches)
+    media.addEventListener('change', listener)
+    return () => media.removeEventListener('change', listener)
+  }, [])
+  return isDark
+}
+
 // These editors are defined at module scope ON PURPOSE: declaring components
 // inside EventPageEditor gives them a new identity on every render, which
 // makes React remount them — and any focused input loses focus after each
@@ -94,6 +107,7 @@ function StyleSelects({ t, style = {}, onChange }) {
 function HeadingStyleEditor({ t, previewLocale, data = {}, defaultHeading, onPatch }) {
   const hs = data.heading_style ?? {}
   const setStyle = (next) => onPatch({ heading_style: next })
+  const isDark = useIsDarkMode()
   return (
     <div className={styles.headingEditor}>
       <Field label={`${t('heading')} (${previewLocale})`}>
@@ -114,7 +128,7 @@ function HeadingStyleEditor({ t, previewLocale, data = {}, defaultHeading, onPat
         addLabel={t('addColor')}
         resetLabel={t('resetColor')}
         value={hs.color}
-        defaultValue="#20242b"
+        defaultValue={isDark ? '#ffffff' : '#000000'}
         onChange={(color) => setStyle({ ...hs, color: color ?? undefined })}
       />
     </div>
@@ -137,6 +151,7 @@ export function EventPageEditor({ initialEvent }) {
   const uiLocale = useLocale()
   const router = useRouter()
   const supabase = getSupabaseBrowserClient()
+  const isDark = useIsDarkMode()
 
   const [event, setEvent] = useState({ page_content: {}, ...initialEvent })
   const [previewLocale, setPreviewLocale] = useState(
@@ -382,7 +397,7 @@ export function EventPageEditor({ initialEvent }) {
             addLabel={t('addColor')}
             resetLabel={t('resetColor')}
             value={theme.page_bg}
-            defaultValue="#faf9f6"
+            defaultValue={isDark ? '#000000' : '#ffffff'}
             onChange={(c) => setTheme({ page_bg: c ?? undefined })}
           />
           <ColorField
@@ -390,7 +405,7 @@ export function EventPageEditor({ initialEvent }) {
             addLabel={t('addColor')}
             resetLabel={t('resetColor')}
             value={theme.text_color}
-            defaultValue="#20242b"
+            defaultValue={isDark ? '#ffffff' : '#000000'}
             onChange={(c) => setTheme({ text_color: c ?? undefined })}
           />
         </div>
@@ -404,7 +419,7 @@ export function EventPageEditor({ initialEvent }) {
           addLabel={t('addColor')}
           resetLabel={t('resetColor')}
           value={theme.hero_bg}
-          defaultValue="#0e5044"
+          defaultValue={isDark ? '#000000' : '#ffffff'}
           onChange={(c) => setTheme({ hero_bg: c ?? undefined })}
         />
         {theme.hero_bg && (
@@ -427,7 +442,7 @@ export function EventPageEditor({ initialEvent }) {
           addLabel={t('addColor')}
           resetLabel={t('resetColor')}
           value={theme.title_color}
-          defaultValue="#ffffff"
+          defaultValue={isDark ? '#ffffff' : '#000000'}
           onChange={(c) => setTheme({ title_color: c ?? undefined })}
         />
         <StyleSelects
@@ -523,7 +538,7 @@ export function EventPageEditor({ initialEvent }) {
               addLabel={t('addColor')}
               resetLabel={t('resetColor')}
               value={hero.chip_bg}
-              defaultValue="#e8a33d"
+              defaultValue={isDark ? '#000000' : '#ffffff'}
               onChange={(c) => patchContent('hero', { chip_bg: c ?? undefined })}
             />
             <ColorField
@@ -531,7 +546,7 @@ export function EventPageEditor({ initialEvent }) {
               addLabel={t('addColor')}
               resetLabel={t('resetColor')}
               value={hero.chip_text}
-              defaultValue="#faf9f6"
+              defaultValue={isDark ? '#ffffff' : '#000000'}
               onChange={(c) => patchContent('hero', { chip_text: c ?? undefined })}
             />
           </div>
@@ -765,7 +780,7 @@ export function EventPageEditor({ initialEvent }) {
           addLabel={t('addColor')}
           resetLabel={t('resetColor')}
           value={tickets.highlight_color}
-          defaultValue="#0e5044"
+          defaultValue={isDark ? '#000000' : '#ffffff'}
           onChange={(c) => patchContent('tickets', { highlight_color: c ?? undefined })}
         />
         {items.map((tier) => (
