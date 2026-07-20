@@ -123,7 +123,7 @@ export function RoleMatrix({ roles, orgId, eventId = null }) {
                       />
                     </td>
                   ))}
-                  <td style={{ textAlign: 'end', whiteSpace: 'nowrap' }}>
+                  <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
                     {editable && dirty && (
                       <Button size="sm" onClick={() => save(role)}>
                         {t('saveRole')}
@@ -159,7 +159,7 @@ export function RoleMatrix({ roles, orgId, eventId = null }) {
                   />
                 </td>
               ))}
-              <td style={{ textAlign: 'end' }}>
+              <td style={{ textAlign: 'center' }}>
                 <Button size="sm" onClick={create} disabled={!newName.trim()}>
                   {t('createRole')}
                 </Button>
