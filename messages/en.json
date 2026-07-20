@@ -72,7 +72,16 @@
     "statusWaitlisted": "Waitlisted",
     "submitError": "Something went wrong while submitting. Your answers are saved on this device — please try again.",
     "draftRestored": "We restored your in-progress registration.",
-    "noTypesSelected": "Select at least one participant."
+    "noTypesSelected": "Select at least one participant.",
+    "modeTitle": "Is this a single or a family registration?",
+    "modeHelp": "You can register just yourself, or several people at once.",
+    "modeSingle": "Single registration",
+    "modeSingleHelp": "I'm registering only myself.",
+    "modeFamily": "Family registration",
+    "modeFamilyHelp": "I'm registering my family or a group.",
+    "noModeSelected": "Choose a registration type to continue.",
+    "singleTypeTitle": "What type of participant are you?",
+    "singleTypeHelp": "Pick the option that describes you."
   },
   "validation": {
     "required": "This field is required",
@@ -251,7 +260,20 @@
     "publishFailed": "Publishing failed — the form was not published",
     "loadError": "Could not load participants. Adjust your search or try again.",
     "navHome": "Home",
-    "navMyEvents": "My Events"
+    "navMyEvents": "My Events",
+    "newForm": "New form",
+    "newFormTitle": "Create a form",
+    "newFormError": "Could not create the form. Please try again.",
+    "formMode": "Form type",
+    "formKindSingle": "Single response form",
+    "formKindFamily": "Family response form",
+    "formModeSingle": "Single",
+    "formModeFamily": "Family",
+    "formModeSingleHelp": "Shown when a respondent registers only themself.",
+    "formModeFamilyHelp": "Shown when a respondent registers a family or group.",
+    "copyQuestionsFrom": "Copy questions from",
+    "copyQuestionsHelp": "Reuse the questions of an existing form so you don't have to rebuild them.",
+    "startBlank": "Start blank"
   },
   "questionTypes": {
     "text": "Short text",

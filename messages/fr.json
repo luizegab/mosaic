@@ -72,7 +72,16 @@
     "statusWaitlisted": "Sur liste d'attente",
     "submitError": "Une erreur s'est produite lors de l'envoi. Vos réponses sont enregistrées sur cet appareil ; veuillez réessayer.",
     "draftRestored": "Nous avons restauré votre inscription en cours.",
-    "noTypesSelected": "Sélectionnez au moins un participant."
+    "noTypesSelected": "Sélectionnez au moins un participant.",
+    "modeTitle": "S'agit-il d'une inscription individuelle ou familiale ?",
+    "modeHelp": "Vous pouvez vous inscrire seul(e) ou inscrire plusieurs personnes à la fois.",
+    "modeSingle": "Inscription individuelle",
+    "modeSingleHelp": "Je m'inscris uniquement moi-même.",
+    "modeFamily": "Inscription familiale",
+    "modeFamilyHelp": "J'inscris ma famille ou un groupe.",
+    "noModeSelected": "Choisissez un type d'inscription pour continuer.",
+    "singleTypeTitle": "Quel type de participant êtes-vous ?",
+    "singleTypeHelp": "Choisissez l'option qui vous correspond."
   },
   "validation": {
     "required": "Ce champ est obligatoire",
@@ -251,7 +260,20 @@
     "publishFailed": "Échec de la publication — le formulaire n'a pas été publié",
     "loadError": "Impossible de charger les participants. Modifiez la recherche ou réessayez.",
     "navHome": "Accueil",
-    "navMyEvents": "Mes événements"
+    "navMyEvents": "Mes événements",
+    "newForm": "Nouveau formulaire",
+    "newFormTitle": "Créer un formulaire",
+    "newFormError": "Impossible de créer le formulaire. Veuillez réessayer.",
+    "formMode": "Type de formulaire",
+    "formKindSingle": "Formulaire de réponse individuelle",
+    "formKindFamily": "Formulaire de réponse familiale",
+    "formModeSingle": "Individuel",
+    "formModeFamily": "Familial",
+    "formModeSingleHelp": "Affiché lorsqu'une personne s'inscrit seule.",
+    "formModeFamilyHelp": "Affiché lorsqu'une personne inscrit une famille ou un groupe.",
+    "copyQuestionsFrom": "Copier les questions de",
+    "copyQuestionsHelp": "Réutilisez les questions d'un formulaire existant pour ne pas les recréer.",
+    "startBlank": "Commencer à vide"
   },
   "questionTypes": {
     "text": "Texte court",

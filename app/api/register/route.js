@@ -10,8 +10,8 @@ import { validateParticipantAnswers } from '@/lib/form-engine/validate'
  * shared validation the browser ran, prunes hidden answers, verifies
  * file-answer ownership, then submits atomically.
  *
- * Body: { eventId, locale, participants: [{ participantTypeKey,
- *   firstName, lastName, email, answers }] }
+ * Body: { eventId, locale, registrationMode, participants: [{
+ *   participantTypeKey, firstName, lastName, email, answers }] }
  */
 export async function POST(request) {
   const supabase = await getSupabaseServerClient()
@@ -29,13 +29,21 @@ export async function POST(request) {
     return NextResponse.json({ error: 'bad_json' }, { status: 400 })
   }
 
-  const { eventId, locale, participants } = body ?? {}
+  const { eventId, locale, registrationMode, participants } = body ?? {}
   if (
     typeof eventId !== 'string' ||
     !Array.isArray(participants) ||
     participants.length === 0 ||
     participants.length > 25
   ) {
+    return NextResponse.json({ error: 'bad_request' }, { status: 400 })
+  }
+  const mode =
+    registrationMode === 'single' || registrationMode === 'family'
+      ? registrationMode
+      : null
+  // A single registration is exactly one person.
+  if (mode === 'single' && participants.length !== 1) {
     return NextResponse.json({ error: 'bad_request' }, { status: 400 })
   }
 
@@ -49,8 +57,23 @@ export async function POST(request) {
     return NextResponse.json({ error: 'event_not_found' }, { status: 404 })
   }
 
+  // The published form for the chosen registration mode (single/family)
+  // overrides each type's own form — mirroring what the wizard rendered.
+  let modeVersionId = null
+  if (mode) {
+    const { data: modeForm } = await supabase
+      .from('forms')
+      .select('current_version_id')
+      .eq('event_id', eventId)
+      .eq('registration_mode', mode)
+      .maybeSingle()
+    modeVersionId = modeForm?.current_version_id ?? null
+  }
+
   const versionIds = [
-    ...new Set(types.map((t) => t.forms?.current_version_id).filter(Boolean)),
+    ...new Set(
+      [...types.map((t) => t.forms?.current_version_id), modeVersionId].filter(Boolean)
+    ),
   ]
   const { data: versions } = await supabase
     .from('form_versions')
@@ -68,7 +91,7 @@ export async function POST(request) {
   for (let i = 0; i < participants.length; i++) {
     const p = participants[i] ?? {}
     const type = typeByKey.get(p.participantTypeKey)
-    const versionId = type?.forms?.current_version_id
+    const versionId = modeVersionId ?? type?.forms?.current_version_id
     const version = versionId ? versionById.get(versionId) : null
     if (!type || !version) {
       return NextResponse.json({ error: 'invalid_participant_type' }, { status: 400 })
