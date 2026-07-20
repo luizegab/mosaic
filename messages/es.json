@@ -72,7 +72,16 @@
     "statusWaitlisted": "En lista de espera",
     "submitError": "Algo salió mal al enviar. Tus respuestas están guardadas en este dispositivo; inténtalo de nuevo.",
     "draftRestored": "Restauramos tu inscripción en curso.",
-    "noTypesSelected": "Selecciona al menos un participante."
+    "noTypesSelected": "Selecciona al menos un participante.",
+    "modeTitle": "¿Es una inscripción individual o familiar?",
+    "modeHelp": "Puedes inscribirte solo tú o varias personas a la vez.",
+    "modeSingle": "Inscripción individual",
+    "modeSingleHelp": "Me inscribo solo yo.",
+    "modeFamily": "Inscripción familiar",
+    "modeFamilyHelp": "Inscribo a mi familia o a un grupo.",
+    "noModeSelected": "Elige un tipo de inscripción para continuar.",
+    "singleTypeTitle": "¿Qué tipo de participante eres?",
+    "singleTypeHelp": "Elige la opción que te describe."
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -81,7 +90,8 @@
     "tooLong": "Demasiado largo",
     "tooSmall": "Demasiado pequeño",
     "tooBig": "Demasiado grande",
-    "notAnOption": "Elige una de las opciones de la lista"
+    "notAnOption": "Elige una de las opciones de la lista",
+    "phoneCode": "Selecciona un código de país"
   },
   "status": {
     "pending": "Pendiente",
@@ -249,6 +259,25 @@
     "loadError": "No se pudieron cargar los participantes. Ajusta la búsqueda o inténtalo de nuevo.",
     "navHome": "Inicio",
     "navMyEvents": "Mis eventos",
+    "newForm": "Nuevo formulario",
+    "newFormTitle": "Crear un formulario",
+    "newFormError": "No se pudo crear el formulario. Inténtalo de nuevo.",
+    "formMode": "Tipo de formulario",
+    "formKindSingle": "Formulario de respuesta individual",
+    "formKindFamily": "Formulario de respuesta familiar",
+    "formModeSingle": "Individual",
+    "formModeFamily": "Familiar",
+    "formModeSingleHelp": "Se muestra cuando alguien se inscribe solo.",
+    "formModeFamilyHelp": "Se muestra cuando alguien inscribe a una familia o grupo.",
+    "copyQuestionsFrom": "Copiar preguntas de",
+    "copyQuestionsHelp": "Reutiliza las preguntas de un formulario existente para no tener que rehacerlas.",
+    "startBlank": "Empezar en blanco",
+    "publishNeedsQuestion": "El formulario debe incluir al menos una pregunta",
+    "nameFormat": "Formato del nombre",
+    "nameFormatFirstLast": "Nombre + apellido",
+    "nameFormatFull": "Nombre completo (un campo)",
+    "nameFormatFirstMiddleLast": "Nombre + segundo nombre + apellido",
+    "addressParts": "Campos de dirección"
     "viewDetail": "Ver",
     "participantDetail": "Detalles del participante"
   },
@@ -264,7 +293,9 @@
     "email": "Correo electrónico",
     "phone": "Teléfono",
     "file": "Subir archivo",
-    "section": "Encabezado de sección"
+    "section": "Encabezado de sección",
+    "name": "Nombre",
+    "address": "Dirección"
   },
   "profile": {
     "title": "Mi perfil",
@@ -273,7 +304,6 @@
     "fullName": "Nombre completo",
     "language": "Idioma preferido",
     "saved": "Guardado",
-    "updateError": "Algo salió mal. Inténtalo de nuevo.",
     "namePromptTitle": "¿Cómo te llamas?",
     "namePromptIntro": "Añade tu nombre para que los organizadores sepan quién eres. Puedes cambiarlo más tarde en tu perfil.",
     "firstName": "Nombre",
@@ -285,5 +315,19 @@
     "theme_system": "Sistema",
     "theme_light": "Claro",
     "theme_dark": "Oscuro"
+    "updateError": "Algo salió mal. Inténtalo de nuevo."
+  },
+  "runtime": {
+    "firstName": "Nombre",
+    "middleName": "Segundo nombre",
+    "lastName": "Apellido",
+    "fullName": "Nombre completo",
+    "phoneCountryCode": "Código de país",
+    "address_line1": "Dirección, línea 1",
+    "address_line2": "Dirección, línea 2",
+    "address_city": "Ciudad",
+    "address_state": "Estado / Provincia",
+    "address_postalCode": "Código postal",
+    "address_country": "País"
   }
 }
