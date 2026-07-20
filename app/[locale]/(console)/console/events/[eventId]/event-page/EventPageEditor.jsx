@@ -70,7 +70,7 @@ function FontSelect({ t, value, onChange }) {
 
 function StyleSelects({ t, style = {}, onChange }) {
   return (
-    <div className={styles.panelRow}>
+    <div className={styles.styleSelects}>
       <NativeSelect
         value={style.size ?? ''}
         onChange={(e) => onChange({ ...style, size: e.target.value || undefined })}
@@ -395,6 +395,29 @@ export function EventPageEditor({ initialEvent }) {
           <FontSelect t={t} value={theme.body_font} onChange={(f) => setTheme({ body_font: f })} />
         </div>
         <h4 className={styles.panelSubhead}>{t('heroTitleStyle')}</h4>
+        <ColorField
+          label={t('heroBackground')}
+          addLabel={t('addColor')}
+          resetLabel={t('resetColor')}
+          value={theme.hero_bg}
+          defaultValue="#0e5044"
+          onChange={(c) => setTheme({ hero_bg: c ?? undefined })}
+        />
+        {theme.hero_bg && (
+          <div className={styles.colorField}>
+            <span className="field-label">
+              {t('heroOpacity')}: {theme.hero_opacity ?? 100}%
+            </span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value={theme.hero_opacity ?? 100}
+              onChange={(e) => setTheme({ hero_opacity: Number(e.target.value) })}
+            />
+          </div>
+        )}
         <ColorField
           label={t('titleColor')}
           addLabel={t('addColor')}

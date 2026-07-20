@@ -266,7 +266,9 @@
     "dateLocationChip": "Date et lieu",
     "showDateLocation": "Afficher la date et le lieu",
     "chipBackground": "Couleur de fond de l'étiquette",
-    "chipTextColor": "Couleur du texte de l'étiquette"
+    "chipTextColor": "Couleur du texte de l'étiquette",
+    "heroBackground": "Couleur de fond de l'en-tête",
+    "heroOpacity": "Opacité du fond"
   },
   "questionTypes": {
     "text": "Texte court",

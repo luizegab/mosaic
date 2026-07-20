@@ -266,7 +266,9 @@
     "dateLocationChip": "Дата и место",
     "showDateLocation": "Показывать дату и место",
     "chipBackground": "Цвет фона плашки",
-    "chipTextColor": "Цвет текста плашки"
+    "chipTextColor": "Цвет текста плашки",
+    "heroBackground": "Цвет фона шапки",
+    "heroOpacity": "Прозрачность фона"
   },
   "questionTypes": {
     "text": "Короткий текст",

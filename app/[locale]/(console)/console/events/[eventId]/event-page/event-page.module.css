@@ -225,6 +225,17 @@
   flex-wrap: wrap;
 }
 
+/* Font size + font type selects, each wide enough to show its label. */
+.styleSelects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.styleSelects > * {
+  min-width: 0;
+}
+
 .colorField .panelRow > :first-child {
   flex: 0 0 auto;
 }

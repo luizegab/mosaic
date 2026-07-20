@@ -101,6 +101,16 @@
   );
 }
 
+/* A custom hero tint replaces the default pine overlay. */
+.heroBg[data-custom-overlay]::after {
+  display: none;
+}
+
+.heroTint {
+  position: absolute;
+  inset: 0;
+}
+
 .heroInner {
   position: relative;
   display: grid;

@@ -38,6 +38,19 @@ export const FONT_CHOICES = [
 
 export const FONT_FAMILIES = Object.fromEntries(FONT_CHOICES.map((c) => [c.key, c.family]))
 
+// Hex (#rgb or #rrggbb) + opacity percent (0–100) → rgba() string.
+function hexToRgba(hex, opacityPct) {
+  if (!hex) return null
+  const h = hex.replace('#', '')
+  const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h
+  const r = parseInt(full.slice(0, 2), 16)
+  const g = parseInt(full.slice(2, 4), 16)
+  const b = parseInt(full.slice(4, 6), 16)
+  if ([r, g, b].some(Number.isNaN)) return null
+  const a = opacityPct == null ? 1 : Math.max(0, Math.min(100, opacityPct)) / 100
+  return `rgba(${r}, ${g}, ${b}, ${a})`
+}
+
 function textStyle(hs = {}, sizes = HEADING_SIZES) {
   const style = {}
   if (hs.color) style.color = hs.color
@@ -162,13 +175,18 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
     TITLE_SIZES
   )
 
-  // With no cover image, let the hero adopt the chosen page colors so theme
-  // changes are visible at the very top of the page (otherwise it keeps its
-  // default pine gradient and looks unaffected).
-  const flatHero = !coverUrl && (theme.page_bg || theme.text_color)
+  // Optional hero background color + opacity. Over a cover image it becomes a
+  // tint overlay; with no image it fills the hero section.
+  const heroTint = hexToRgba(theme.hero_bg, theme.hero_opacity)
+
+  // With no cover image, let the hero adopt the chosen colors so theme changes
+  // are visible at the very top of the page (otherwise it keeps its default
+  // pine gradient and looks unaffected).
+  const flatHero = !coverUrl && (theme.hero_bg || theme.page_bg || theme.text_color)
   const heroStyle = {}
   if (flatHero) {
-    if (theme.page_bg) heroStyle.background = theme.page_bg
+    if (heroTint) heroStyle.background = heroTint
+    else if (theme.page_bg) heroStyle.background = theme.page_bg
     if (theme.text_color) heroStyle.color = theme.text_color
   }
 
@@ -201,10 +219,17 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
         {...sectionProps}
       >
         {coverUrl && (
-          <div className={styles.heroBg} aria-hidden="true">
+          <div
+            className={styles.heroBg}
+            data-custom-overlay={heroTint ? '' : undefined}
+            aria-hidden="true"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={coverUrl} alt="" />
           </div>
+        )}
+        {coverUrl && heroTint && (
+          <div className={styles.heroTint} style={{ background: heroTint }} aria-hidden="true" />
         )}
         <div className={`container ${styles.heroInner}`}>
           {hero.show_chip !== false && (

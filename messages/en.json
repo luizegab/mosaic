@@ -266,7 +266,9 @@
     "dateLocationChip": "Date & location",
     "showDateLocation": "Show date & location",
     "chipBackground": "Chip background color",
-    "chipTextColor": "Chip text color"
+    "chipTextColor": "Chip text color",
+    "heroBackground": "Hero background color",
+    "heroOpacity": "Background opacity"
   },
   "questionTypes": {
     "text": "Short text",
