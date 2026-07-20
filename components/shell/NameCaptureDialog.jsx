@@ -6,8 +6,10 @@ import { usePathname, useRouter } from '@/lib/i18n/navigation'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import { Button, Dialog, Field, Input } from '@/components/ui'
 
-// Remembers a dismissal so the prompt doesn't re-nag on every navigation or
-// reload; the server still stops rendering it entirely once a name is saved.
+// Remembers a dismissal for the current browser session only, so the prompt
+// doesn't re-nag on every navigation or reload but returns in a new session
+// while the name is still blank; the server stops rendering it entirely once a
+// name is saved.
 const DISMISSED_KEY = 'mosaic.namePrompt.dismissed'
 
 // Flows that collect a name themselves or would be obscured by the modal.
@@ -25,7 +27,7 @@ export function NameCaptureDialog({ userId }) {
   const supabase = getSupabaseBrowserClient()
 
   // Start closed so server and client markup match; open after mount only if
-  // this browser hasn't dismissed it and we're not on an excluded route.
+  // this session hasn't dismissed it and we're not on an excluded route.
   const [open, setOpen] = useState(false)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -34,14 +36,14 @@ export function NameCaptureDialog({ userId }) {
 
   useEffect(() => {
     if (isExcludedPath(pathname)) return
-    if (localStorage.getItem(DISMISSED_KEY)) return
+    if (sessionStorage.getItem(DISMISSED_KEY)) return
     setOpen(true)
   }, [pathname])
 
   function onOpenChange(next) {
     setOpen(next)
     // Any close that isn't a successful save counts as "skip for now".
-    if (!next) localStorage.setItem(DISMISSED_KEY, '1')
+    if (!next) sessionStorage.setItem(DISMISSED_KEY, '1')
   }
 
   async function save(e) {
@@ -64,7 +66,7 @@ export function NameCaptureDialog({ userId }) {
       setError(t('updateError'))
       return
     }
-    localStorage.setItem(DISMISSED_KEY, '1')
+    sessionStorage.setItem(DISMISSED_KEY, '1')
     setOpen(false)
     router.refresh()
   }
@@ -98,11 +100,6 @@ export function NameCaptureDialog({ userId }) {
         </Field>
         {error && <p className="alert alert-error">{error}</p>}
         <div style={{ display: 'flex', gap: 'var(--s-3)', justifyContent: 'flex-end' }}>
-          <Dialog.Close asChild>
-            <Button variant="ghost" type="button">
-              {t('namePromptSkip')}
-            </Button>
-          </Dialog.Close>
           <Button type="submit" disabled={saving}>
             {saving ? tCommon('loading') : tCommon('save')}
           </Button>
