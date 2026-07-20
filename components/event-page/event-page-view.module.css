@@ -179,26 +179,25 @@
 .registerBtn {
   background: var(--ep-btn-bg, #fff);
   color: var(--ep-btn-text, #111);
-  border: 1px solid var(--ep-btn-bg, #111);
+  border: 1px solid var(--ep-btn-bg, #fff);
+  box-shadow: var(--shadow-sm);
 }
 
 .registerBtn:hover {
-  background: var(--ep-btn-text, #111);
-  color: var(--ep-btn-bg, #fff);
-  border-color: var(--ep-btn-text, #111);
-  filter: brightness(0.9);
+  filter: brightness(0.92);
+  opacity: 0.96;
 }
 
 .heroGhostBtn {
   background: transparent;
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.55);
+  color: var(--ep-btn-bg, #fff);
+  border: 1px solid color-mix(in srgb, var(--ep-btn-bg, #fff) 55%, transparent);
 }
 
 .heroGhostBtn:hover {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  border-color: var(--ep-btn-bg, #fff);
+  background: color-mix(in srgb, var(--ep-btn-bg, #fff) 15%, transparent);
+  color: var(--ep-btn-bg, #fff);
 }
 
 /* ---- about ---- */
