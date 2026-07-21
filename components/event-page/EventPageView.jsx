@@ -6,7 +6,17 @@ import { formatEventDate, formatEventDateRange } from '@/lib/dates'
 import { eventMediaUrl } from '@/lib/storage'
 import { StatIcon } from './stat-icons'
 import { Countdown } from './Countdown'
+import {
+  TracksSection,
+  TestimonialsSection,
+  GallerySection,
+  FaqSection,
+  MapSection,
+} from './sections-extra'
 import styles from './event-page-view.module.css'
+
+// Hero layout variants (used by the console editor's dropdown).
+export const HERO_VARIANTS = ['classic', 'split']
 
 // Style options shared with the console editor.
 export const HEADING_SIZES = {
@@ -148,8 +158,19 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
   const agenda = content.agenda ?? {}
   const tickets = content.tickets ?? {}
   const contactSection = content.contact ?? {}
+  const tracks = content.tracks ?? {}
+  const testimonials = content.testimonials ?? {}
+  const gallery = content.gallery ?? {}
+  const faq = content.faq ?? {}
+  const mapSection = content.map ?? {}
   const chipBg = hexToRgba(hero.chip_bg, hero.chip_bg_opacity)
   const sectionBg = (s) => (s?.bg ? { background: s.bg } : undefined)
+
+  const heroVariant = theme.hero_variant === 'split' ? 'split' : 'classic'
+  const countdownTarget =
+    hero.countdown_target === 'registration_closes_at'
+      ? event.registration_closes_at
+      : event.starts_at
   const showAbout = about.enabled && (L(about.body) || about.image_path || about.stats?.length)
   const showSpeakers = speakers.enabled && speakers.items?.length > 0
   const showAgenda = agenda.enabled && (agenda.items?.length > 0 || agenda.image_path)
@@ -210,6 +231,66 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
     <RegisterCta editable={editable} registerHref={registerHref} label={t('register')} />
   )
 
+  const countdownTone = coverUrl
+    ? 'light'
+    : heroVariant === 'split'
+      ? 'dark'
+      : flatHero
+        ? 'dark'
+        : 'light'
+
+  // Hero content shared by the classic and split layouts.
+  const heroBody = (
+    <>
+      {hero.show_chip !== false && (
+        <span
+          className={styles.heroChip}
+          style={{
+            ...(chipBg ? { background: chipBg, borderColor: chipBg } : {}),
+            ...(hero.chip_text ? { color: hero.chip_text } : {}),
+          }}
+        >
+          {formatEventDateRange(event.starts_at, event.ends_at, event.timezone, locale)}
+          {location ? ` · ${location}` : ''}
+        </span>
+      )}
+      <h1 className={styles.heroTitle} style={titleStyle}>
+        {name}
+      </h1>
+      {description && (
+        <p
+          className={styles.heroDescription}
+          style={theme.desc_color ? { color: theme.desc_color } : undefined}
+        >
+          {description}
+        </p>
+      )}
+      <div className={styles.heroActions}>
+        {closed ? (
+          <p className={styles.heroNotice}>{t('registrationClosed')}</p>
+        ) : notOpenYet ? (
+          <p className={styles.heroNotice}>
+            {t('registrationNotOpen', {
+              date: formatEventDate(event.registration_opens_at, event.timezone, locale),
+            })}
+          </p>
+        ) : (
+          registerButton
+        )}
+        {showAgenda && agenda.show_hero_button !== false && (
+          <a className={`btn ${styles.heroGhostBtn}`} href="#agenda">
+            {t('viewAgenda')}
+          </a>
+        )}
+      </div>
+      {hero.show_countdown !== false && !closed && countdownTarget && (
+        <div className={styles.heroCountdown}>
+          <Countdown targetIso={countdownTarget} tone={countdownTone} label={t('countdownLabel')} />
+        </div>
+      )}
+    </>
+  )
+
   return (
     <div
       className={styles.page}
@@ -218,85 +299,50 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
       data-custom-text={theme.text_color ? '' : undefined}
     >
       {/* ---- Hero ---- */}
-      <Section
-        section="hero"
-        className={styles.hero}
-        style={heroStyle}
-        dataFlat={flatHero}
-        {...sectionProps}
-      >
-        {coverUrl && (
-          <div
-            className={styles.heroBg}
-            data-custom-overlay={heroTint ? '' : undefined}
-            aria-hidden="true"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={coverUrl} alt="" />
+      {heroVariant === 'split' ? (
+        <Section section="hero" className={styles.heroSplit} {...sectionProps}>
+          <div className={`container ${styles.heroSplitInner}`}>
+            <div className={styles.heroSplitText}>{heroBody}</div>
+            <div className={styles.heroSplitMedia}>
+              {coverUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={coverUrl} alt="" />
+              ) : (
+                <div className={styles.heroSplitPlaceholder} aria-hidden="true" />
+              )}
+            </div>
           </div>
-        )}
-        {coverUrl && heroTint && (
-          <div className={styles.heroTint} style={{ background: heroTint }} aria-hidden="true" />
-        )}
-        {hero.texture && <div className={styles.heroPattern} aria-hidden="true" />}
-        <div
-          className={`container ${styles.heroInner}`}
-          data-align={theme.title_align || undefined}
+        </Section>
+      ) : (
+        <Section
+          section="hero"
+          className={styles.hero}
+          style={heroStyle}
+          dataFlat={flatHero}
+          {...sectionProps}
         >
-          {hero.show_chip !== false && (
-            <span
-              className={styles.heroChip}
-              style={{
-                ...(chipBg ? { background: chipBg, borderColor: chipBg } : {}),
-                ...(hero.chip_text ? { color: hero.chip_text } : {}),
-              }}
+          {coverUrl && (
+            <div
+              className={styles.heroBg}
+              data-custom-overlay={heroTint ? '' : undefined}
+              aria-hidden="true"
             >
-              {formatEventDateRange(event.starts_at, event.ends_at, event.timezone, locale)}
-              {location ? ` · ${location}` : ''}
-            </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={coverUrl} alt="" />
+            </div>
           )}
-          <h1 className={styles.heroTitle} style={titleStyle}>
-            {name}
-          </h1>
-          {description && (
-            <p
-              className={styles.heroDescription}
-              style={theme.desc_color ? { color: theme.desc_color } : undefined}
-            >
-              {description}
-            </p>
+          {coverUrl && heroTint && (
+            <div className={styles.heroTint} style={{ background: heroTint }} aria-hidden="true" />
           )}
-          <div className={styles.heroActions}>
-            {closed ? (
-              <p className={styles.heroNotice}>{t('registrationClosed')}</p>
-            ) : notOpenYet ? (
-              <p className={styles.heroNotice}>
-                {t('registrationNotOpen', {
-                  date: formatEventDate(event.registration_opens_at, event.timezone, locale),
-                })}
-              </p>
-            ) : (
-              registerButton
-            )}
-            {showAgenda && agenda.show_hero_button !== false && (
-              <a className={`btn ${styles.heroGhostBtn}`} href="#agenda">
-                {t('viewAgenda')}
-              </a>
-            )}
-            {hero.show_countdown !== false && !closed && (
-              <Countdown
-                target={event.starts_at}
-                className={styles.countdown}
-                labels={{
-                  days: t('countdownDays'),
-                  hours: t('countdownHours'),
-                  min: t('countdownMin'),
-                }}
-              />
-            )}
+          {hero.texture && <div className={styles.heroPattern} aria-hidden="true" />}
+          <div
+            className={`container ${styles.heroInner}`}
+            data-align={theme.title_align || undefined}
+          >
+            {heroBody}
           </div>
-        </div>
-      </Section>
+        </Section>
+      )}
 
       {/* ---- About ---- */}
       {showAbout && (
@@ -380,6 +426,15 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
         </Section>
       )}
 
+      {/* ---- Tracks ---- */}
+      <TracksSection
+        content={tracks}
+        locale={locale}
+        defaultLocale={dl}
+        editable={editable}
+        onEditSection={onEditSection}
+      />
+
       {/* ---- Agenda ---- */}
       {showAgenda && (
         <Section id="agenda" section="agenda" className={styles.agenda} style={sectionBg(agenda)} {...sectionProps}>
@@ -408,6 +463,22 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
           </div>
         </Section>
       )}
+
+      {/* ---- Testimonials & Gallery ---- */}
+      <TestimonialsSection
+        content={testimonials}
+        locale={locale}
+        defaultLocale={dl}
+        editable={editable}
+        onEditSection={onEditSection}
+      />
+      <GallerySection
+        content={gallery}
+        locale={locale}
+        defaultLocale={dl}
+        editable={editable}
+        onEditSection={onEditSection}
+      />
 
       {/* ---- Tickets ---- */}
       {showTickets && (
@@ -447,6 +518,22 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
           </div>
         </Section>
       )}
+
+      {/* ---- FAQ & Map ---- */}
+      <FaqSection
+        content={faq}
+        locale={locale}
+        defaultLocale={dl}
+        editable={editable}
+        onEditSection={onEditSection}
+      />
+      <MapSection
+        content={mapSection}
+        locale={locale}
+        defaultLocale={dl}
+        editable={editable}
+        onEditSection={onEditSection}
+      />
 
       {/* ---- Contact ---- */}
       {hasContact && (

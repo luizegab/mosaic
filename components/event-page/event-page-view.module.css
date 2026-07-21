@@ -609,3 +609,82 @@
 .pencil:hover {
   opacity: 1;
 }
+/* =============================================================================
+ * APPEND to components/event-page/event-page-view.module.css
+ * Adds: countdown spacing in the hero + the optional split-hero variant.
+ * ===========================================================================*/
+
+/* ---- countdown inside hero ---- */
+.heroCountdown {
+  margin-top: var(--s-5);
+  padding-top: var(--s-5);
+  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  width: 100%;
+}
+
+/* ---- split hero variant ---- */
+.heroSplit {
+  position: relative;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.heroSplitInner {
+  display: grid;
+  gap: 0;
+  align-items: stretch;
+}
+
+@media (min-width: 56rem) {
+  .heroSplitInner {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--s-7);
+  }
+}
+
+.heroSplitText {
+  display: grid;
+  justify-items: start;
+  align-content: center;
+  gap: var(--s-4);
+  padding-block: var(--s-8);
+}
+
+.heroSplitMedia {
+  position: relative;
+  min-height: 22rem;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  align-self: center;
+}
+
+.heroSplitMedia img {
+  width: 100%;
+  height: 100%;
+  min-height: 22rem;
+  object-fit: cover;
+}
+
+.heroSplitPlaceholder {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--surface-sunken) 0 12px,
+    color-mix(in srgb, var(--surface-sunken) 60%, var(--paper)) 12px 24px
+  );
+}
+
+/* In the split hero the text sits on light paper, so reset the white-on-dark
+   hero treatment for title/description/chip. */
+.heroSplit .heroTitle {
+  color: var(--ink);
+}
+.heroSplit .heroDescription {
+  color: var(--ink-soft);
+}
+.heroSplit .heroChip {
+  background: var(--surface-sunken);
+  border-color: var(--line);
+  color: var(--ink-soft);
+}

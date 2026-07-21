@@ -11,7 +11,22 @@ import { EventPageView, FONT_CHOICES } from '@/components/event-page/EventPageVi
 import { StatIcon, STAT_ICON_KEYS } from '@/components/event-page/stat-icons'
 import styles from './event-page.module.css'
 
-const SECTIONS = ['theme', 'basics', 'hero', 'about', 'speakers', 'agenda', 'tickets', 'contact']
+const SECTIONS = [
+  'theme',
+  'basics',
+  'hero',
+  'about',
+  'speakers',
+  'tracks',
+  'agenda',
+  'testimonials',
+  'gallery',
+  'faq',
+  'tickets',
+  'map',
+  'contact',
+]
+const TRACK_COLORS = ['#3d7ea6', '#e8a33d', '#e2725b', '#146b5c']
 const SIZE_OPTIONS = ['', 'sm', 'md', 'lg', 'xl']
 
 function newId() {
@@ -173,6 +188,9 @@ export function EventPageEditor({ initialEvent }) {
   const speakerUploadTarget = useRef(null)
   const statInputRef = useRef(null)
   const statUploadTarget = useRef(null)
+  const galleryInputRef = useRef(null)
+  const galleryUploadTarget = useRef(null)
+  const mapImgInputRef = useRef(null)
 
   useEffect(() => {
     setOrigin(window.location.origin)
@@ -342,6 +360,25 @@ export function EventPageEditor({ initialEvent }) {
     if (file) {
       const path = await upload(file, 'agenda')
       if (path) patchContent('agenda', { enabled: true, image_path: path })
+    }
+    e.target.value = ''
+  }
+
+  async function onGalleryFile(e) {
+    const file = e.target.files?.[0]
+    const id = galleryUploadTarget.current
+    if (file && id) {
+      const path = await upload(file, `gallery-${id}`)
+      if (path) patchItem('gallery', id, { image_path: path })
+    }
+    e.target.value = ''
+  }
+
+  async function onMapImgFile(e) {
+    const file = e.target.files?.[0]
+    if (file) {
+      const path = await upload(file, 'map')
+      if (path) patchContent('map', { enabled: true, image_path: path })
     }
     e.target.value = ''
   }
@@ -590,6 +627,17 @@ export function EventPageEditor({ initialEvent }) {
     const hero = content.hero ?? {}
     return (
       <>
+        <div className={styles.colorField}>
+          <span className="field-label">{t('heroLayout')}</span>
+          <NativeSelect
+            value={content.theme?.hero_variant ?? 'classic'}
+            onChange={(e) => patchContent('theme', { hero_variant: e.target.value })}
+            aria-label={t('heroLayout')}
+          >
+            <option value="classic">{t('heroLayoutClassic')}</option>
+            <option value="split">{t('heroLayoutSplit')}</option>
+          </NativeSelect>
+        </div>
         <input ref={coverInputRef} type="file" accept="image/*" hidden onChange={onCoverFile} />
         {event.cover_image_path && (
           /* eslint-disable-next-line @next/next/no-img-element */
@@ -660,6 +708,19 @@ export function EventPageEditor({ initialEvent }) {
           onCheckedChange={(checked) => patchContent('hero', { show_countdown: !!checked })}
         />
         <p className="field-help">{t('countdownHelp')}</p>
+        {hero.show_countdown !== false && (
+          <div className={styles.colorField}>
+            <span className="field-label">{t('countdownTarget')}</span>
+            <NativeSelect
+              value={hero.countdown_target ?? 'starts_at'}
+              onChange={(e) => patchContent('hero', { countdown_target: e.target.value })}
+              aria-label={t('countdownTarget')}
+            >
+              <option value="starts_at">{t('countdownToStart')}</option>
+              <option value="registration_closes_at">{t('countdownToClose')}</option>
+            </NativeSelect>
+          </div>
+        )}
         <CheckboxRow
           label={t('heroTexture')}
           checked={!!hero.texture}
@@ -1067,14 +1128,228 @@ export function EventPageEditor({ initialEvent }) {
     )
   }
 
+  function renderTracks() {
+    const tracks = content.tracks ?? {}
+    const items = tracks.items ?? []
+    return (
+      <>
+        {sectionHeader('tracks')}
+        {headingEditor('tracks')}
+        {sectionBgField('tracks')}
+        {items.map((it, i) => (
+          <div key={it.id} className={styles.panelItem}>
+            <div className={styles.panelItemFields}>
+              <Input
+                placeholder={`${t('trackTitle')} (${previewLocale})`}
+                value={lv(it.title)}
+                onChange={(e) => patchItem('tracks', it.id, { title: setLv(it.title, e.target.value) })}
+              />
+              <Textarea
+                rows={2}
+                placeholder={`${t('trackBody')} (${previewLocale})`}
+                value={lv(it.body)}
+                onChange={(e) => patchItem('tracks', it.id, { body: setLv(it.body, e.target.value) })}
+              />
+              <ColorField
+                label={t('highlightColor')}
+                addLabel={t('addColor')}
+                resetLabel={t('resetColor')}
+                value={it.color}
+                defaultValue={TRACK_COLORS[i % TRACK_COLORS.length]}
+                onChange={(c) => patchItem('tracks', it.id, { color: c ?? undefined })}
+              />
+            </div>
+            <Button variant="ghost" size="sm" aria-label={t('remove')} onClick={() => removeItem('tracks', it.id)}>
+              ✕
+            </Button>
+          </div>
+        ))}
+        <Button variant="secondary" size="sm" onClick={() => addItem('tracks', { title: {}, body: {} })}>
+          {t('addTrack')}
+        </Button>
+      </>
+    )
+  }
+
+  function renderTestimonials() {
+    const items = content.testimonials?.items ?? []
+    return (
+      <>
+        {sectionHeader('testimonials')}
+        {headingEditor('testimonials')}
+        {sectionBgField('testimonials')}
+        {items.map((it) => (
+          <div key={it.id} className={styles.panelItem}>
+            <div className={styles.panelItemFields}>
+              <Textarea
+                rows={3}
+                placeholder={`${t('quoteText')} (${previewLocale})`}
+                value={lv(it.quote)}
+                onChange={(e) => patchItem('testimonials', it.id, { quote: setLv(it.quote, e.target.value) })}
+              />
+              <Input
+                placeholder={t('quoteAuthor')}
+                value={it.author ?? ''}
+                onChange={(e) => patchItem('testimonials', it.id, { author: e.target.value })}
+              />
+              <Input
+                placeholder={`${t('quoteRole')} (${previewLocale})`}
+                value={lv(it.role)}
+                onChange={(e) => patchItem('testimonials', it.id, { role: setLv(it.role, e.target.value) })}
+              />
+            </div>
+            <Button variant="ghost" size="sm" aria-label={t('remove')} onClick={() => removeItem('testimonials', it.id)}>
+              ✕
+            </Button>
+          </div>
+        ))}
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => addItem('testimonials', { quote: {}, author: '', role: {} })}
+        >
+          {t('addTestimonial')}
+        </Button>
+      </>
+    )
+  }
+
+  function renderGallery() {
+    const items = content.gallery?.items ?? []
+    return (
+      <>
+        {sectionHeader('gallery')}
+        {headingEditor('gallery')}
+        {sectionBgField('gallery')}
+        <input ref={galleryInputRef} type="file" accept="image/*" hidden onChange={onGalleryFile} />
+        {items.map((it) => (
+          <div key={it.id} className={styles.panelItem}>
+            <div className={styles.panelItemMedia}>
+              <button
+                type="button"
+                className={styles.photoDrop}
+                data-has-photo={it.image_path ? '' : undefined}
+                onClick={() => {
+                  galleryUploadTarget.current = it.id
+                  galleryInputRef.current?.click()
+                }}
+              >
+                {it.image_path ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={eventMediaUrl(it.image_path)} alt="" />
+                    <span className={styles.photoOverlay}>{t('changePhoto')}</span>
+                  </>
+                ) : (
+                  <span className={styles.photoPrompt}>{t('uploadImage')}</span>
+                )}
+              </button>
+            </div>
+            <Button variant="ghost" size="sm" aria-label={t('remove')} onClick={() => removeItem('gallery', it.id)}>
+              ✕
+            </Button>
+          </div>
+        ))}
+        <Button variant="secondary" size="sm" onClick={() => addItem('gallery', { image_path: null })}>
+          {t('addPhoto')}
+        </Button>
+      </>
+    )
+  }
+
+  function renderFaq() {
+    const items = content.faq?.items ?? []
+    return (
+      <>
+        {sectionHeader('faq')}
+        {headingEditor('faq')}
+        {sectionBgField('faq')}
+        {items.map((it) => (
+          <div key={it.id} className={styles.panelItem}>
+            <div className={styles.panelItemFields}>
+              <Input
+                placeholder={`${t('faqQuestion')} (${previewLocale})`}
+                value={lv(it.question)}
+                onChange={(e) => patchItem('faq', it.id, { question: setLv(it.question, e.target.value) })}
+              />
+              <Textarea
+                rows={3}
+                placeholder={`${t('faqAnswer')} (${previewLocale})`}
+                value={lv(it.answer)}
+                onChange={(e) => patchItem('faq', it.id, { answer: setLv(it.answer, e.target.value) })}
+              />
+            </div>
+            <Button variant="ghost" size="sm" aria-label={t('remove')} onClick={() => removeItem('faq', it.id)}>
+              ✕
+            </Button>
+          </div>
+        ))}
+        <Button variant="secondary" size="sm" onClick={() => addItem('faq', { question: {}, answer: {} })}>
+          {t('addFaq')}
+        </Button>
+      </>
+    )
+  }
+
+  function renderMap() {
+    const map = content.map ?? {}
+    return (
+      <>
+        {sectionHeader('map')}
+        {headingEditor('map')}
+        {sectionBgField('map')}
+        <Field label={`${t('mapAddress')} (${previewLocale})`}>
+          {({ id }) => (
+            <Textarea
+              id={id}
+              rows={2}
+              value={lv(map.address)}
+              onChange={(e) => patchContent('map', { address: setLv(map.address, e.target.value) })}
+            />
+          )}
+        </Field>
+        <Field label={t('mapEmbedUrl')} help={t('mapEmbedHelp')}>
+          {({ id }) => (
+            <Input
+              id={id}
+              placeholder="https://www.google.com/maps/embed?..."
+              value={map.embed_url ?? ''}
+              onChange={(e) => patchContent('map', { embed_url: e.target.value || undefined })}
+            />
+          )}
+        </Field>
+        <input ref={mapImgInputRef} type="file" accept="image/*" hidden onChange={onMapImgFile} />
+        {map.image_path && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img className={styles.panelThumb} src={eventMediaUrl(map.image_path)} alt="" />
+        )}
+        <div className={styles.panelRow}>
+          <Button variant="secondary" size="sm" onClick={() => mapImgInputRef.current?.click()}>
+            {map.image_path ? t('changeImage') : t('uploadImage')}
+          </Button>
+          {map.image_path && (
+            <Button variant="ghost" size="sm" onClick={() => patchContent('map', { image_path: null })}>
+              {t('remove')}
+            </Button>
+          )}
+        </div>
+      </>
+    )
+  }
+
   const sectionRenderers = {
     theme: renderTheme,
     basics: renderBasics,
     hero: renderHero,
     about: renderAbout,
     speakers: renderSpeakers,
+    tracks: renderTracks,
     agenda: renderAgenda,
+    testimonials: renderTestimonials,
+    gallery: renderGallery,
+    faq: renderFaq,
     tickets: renderTickets,
+    map: renderMap,
     contact: renderContact,
   }
 
