@@ -72,7 +72,16 @@
     "statusWaitlisted": "Sur liste d'attente",
     "submitError": "Une erreur s'est produite lors de l'envoi. Vos réponses sont enregistrées sur cet appareil ; veuillez réessayer.",
     "draftRestored": "Nous avons restauré votre inscription en cours.",
-    "noTypesSelected": "Sélectionnez au moins un participant."
+    "noTypesSelected": "Sélectionnez au moins un participant.",
+    "modeTitle": "S'agit-il d'une inscription individuelle ou familiale ?",
+    "modeHelp": "Vous pouvez vous inscrire seul(e) ou inscrire plusieurs personnes à la fois.",
+    "modeSingle": "Inscription individuelle",
+    "modeSingleHelp": "Je m'inscris uniquement moi-même.",
+    "modeFamily": "Inscription familiale",
+    "modeFamilyHelp": "J'inscris ma famille ou un groupe.",
+    "noModeSelected": "Choisissez un type d'inscription pour continuer.",
+    "singleTypeTitle": "Quel type de participant êtes-vous ?",
+    "singleTypeHelp": "Choisissez l'option qui vous correspond."
   },
   "validation": {
     "required": "Ce champ est obligatoire",
@@ -81,7 +90,8 @@
     "tooLong": "Trop long",
     "tooSmall": "Trop petit",
     "tooBig": "Trop grand",
-    "notAnOption": "Choisissez une des options proposées"
+    "notAnOption": "Choisissez une des options proposées",
+    "phoneCode": "Sélectionnez un indicatif de pays"
   },
   "status": {
     "pending": "En attente",
@@ -249,8 +259,33 @@
     "loadError": "Impossible de charger les participants. Modifiez la recherche ou réessayez.",
     "navHome": "Accueil",
     "navMyEvents": "Mes événements",
+    "newForm": "Nouveau formulaire",
+    "newFormTitle": "Créer un formulaire",
+    "newFormError": "Impossible de créer le formulaire. Veuillez réessayer.",
+    "formMode": "Type de formulaire",
+    "formKindSingle": "Formulaire de réponse individuelle",
+    "formKindFamily": "Formulaire de réponse familiale",
+    "formModeSingle": "Individuel",
+    "formModeFamily": "Familial",
+    "formModeSingleHelp": "Affiché lorsqu'une personne s'inscrit seule.",
+    "formModeFamilyHelp": "Affiché lorsqu'une personne inscrit une famille ou un groupe.",
+    "copyQuestionsFrom": "Copier les questions de",
+    "copyQuestionsHelp": "Réutilisez les questions d'un formulaire existant pour ne pas les recréer.",
+    "startBlank": "Commencer à vide",
+    "publishNeedsQuestion": "Le formulaire doit contenir au moins une question",
+    "nameFormat": "Format du nom",
+    "nameFormatFirstLast": "Prénom + nom",
+    "nameFormatFull": "Nom complet (un seul champ)",
+    "nameFormatFirstMiddleLast": "Prénom + deuxième prénom + nom",
+    "addressParts": "Champs d'adresse",
     "viewDetail": "Voir",
-    "participantDetail": "Détails du participant"
+    "participantDetail": "Détails du participant",
+    "joinEvents": "Rejoindre des événements",
+    "joinEventsHelp": "Vous pouvez demander l'accès pour organiser ou consulter d'autres événements dans cette organisation.",
+    "joinEventsAllAccess": "Vous disposez d'un accès administrateur et pouvez consulter tous les événements.",
+    "joinEventsEmpty": "Il n'y a pas d'autres événements actifs à rejoindre.",
+    "joinByCode": "Rejoindre par code d'événement",
+    "joinByCodeHelp": "Entrez le slug/code de l'événement (ex. summer-conference-2026) pour demander un accès organisateur."
   },
   "questionTypes": {
     "text": "Texte court",
@@ -264,7 +299,9 @@
     "email": "E-mail",
     "phone": "Téléphone",
     "file": "Fichier",
-    "section": "En-tête de section"
+    "section": "En-tête de section",
+    "name": "Nom",
+    "address": "Adresse"
   },
   "profile": {
     "title": "Mon profil",
@@ -273,12 +310,30 @@
     "fullName": "Nom complet",
     "language": "Langue préférée",
     "saved": "Enregistré",
-    "updateError": "Une erreur est survenue. Veuillez réessayer.",
     "namePromptTitle": "Comment vous appelez-vous ?",
     "namePromptIntro": "Ajoutez votre nom pour que les organisateurs sachent qui vous êtes. Vous pourrez le modifier plus tard dans votre profil.",
     "firstName": "Prénom",
     "lastName": "Nom",
     "namePromptSkip": "Passer pour l'instant",
-    "namePromptRequired": "Veuillez saisir votre prénom et votre nom."
+    "namePromptRequired": "Veuillez saisir votre prénom et votre nom.",
+    "theme": "Apparence",
+    "themeHelp": "Choisissez clair ou sombre, ou suivez votre appareil.",
+    "theme_system": "Système",
+    "theme_light": "Clair",
+    "theme_dark": "Sombre",
+    "updateError": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "runtime": {
+    "firstName": "Prénom",
+    "middleName": "Deuxième prénom",
+    "lastName": "Nom",
+    "fullName": "Nom complet",
+    "phoneCountryCode": "Indicatif du pays",
+    "address_line1": "Adresse, ligne 1",
+    "address_line2": "Adresse, ligne 2",
+    "address_city": "Ville",
+    "address_state": "État / Province",
+    "address_postalCode": "Code postal",
+    "address_country": "Pays"
   }
 }

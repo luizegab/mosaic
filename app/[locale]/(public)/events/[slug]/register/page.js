@@ -38,20 +38,47 @@ export default async function RegisterPage({ params }) {
     .order('sort_order')
   if (!types?.length) notFound()
 
-  const versionIds = [...new Set(types.map((pt) => pt.forms?.current_version_id).filter(Boolean))]
+  // Mode-scoped forms (single/family) override the per-type form when the
+  // respondent picks that registration mode.
+  const { data: modeFormRows } = await supabase
+    .from('forms')
+    .select('registration_mode, current_version_id')
+    .eq('event_id', event.id)
+    .not('registration_mode', 'is', null)
+
+  const versionIds = [
+    ...new Set(
+      [
+        ...types.map((pt) => pt.forms?.current_version_id),
+        ...(modeFormRows ?? []).map((f) => f.current_version_id),
+      ].filter(Boolean)
+    ),
+  ]
   const { data: versions } = await supabase
     .from('form_versions')
     .select('id, definition')
     .in('id', versionIds)
   const defById = new Map((versions ?? []).map((v) => [v.id, v.definition]))
 
+  const modeForms = {}
+  for (const f of modeFormRows ?? []) {
+    if (f.current_version_id && defById.has(f.current_version_id)) {
+      modeForms[f.registration_mode] = defById.get(f.current_version_id)
+    }
+  }
+
+  // A type is registerable if its own form is published, or if any published
+  // mode form can stand in for it.
+  const hasModeForms = Object.keys(modeForms).length > 0
   const participantTypes = types
-    .filter((pt) => pt.forms?.current_version_id)
+    .filter((pt) => pt.forms?.current_version_id || hasModeForms)
     .map((pt) => ({
       key: pt.key,
       name: pt.name,
       max_per_registration: pt.max_per_registration,
-      definition: defById.get(pt.forms.current_version_id) ?? { questions: [] },
+      definition: pt.forms?.current_version_id
+        ? defById.get(pt.forms.current_version_id) ?? { questions: [] }
+        : null,
     }))
 
   return (
@@ -59,7 +86,12 @@ export default async function RegisterPage({ params }) {
       <h1 className="page-title" style={{ marginBottom: 'var(--s-5)' }}>
         {t('title', { event: lt(event.name, locale, event.default_locale) })}
       </h1>
-      <RegistrationWizard event={event} participantTypes={participantTypes} userId={user.id} />
+      <RegistrationWizard
+        event={event}
+        participantTypes={participantTypes}
+        modeForms={modeForms}
+        userId={user.id}
+      />
     </div>
   )
 }

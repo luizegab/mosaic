@@ -72,7 +72,16 @@
     "statusWaitlisted": "Waitlisted",
     "submitError": "Something went wrong while submitting. Your answers are saved on this device — please try again.",
     "draftRestored": "We restored your in-progress registration.",
-    "noTypesSelected": "Select at least one participant."
+    "noTypesSelected": "Select at least one participant.",
+    "modeTitle": "Is this a single or a family registration?",
+    "modeHelp": "You can register just yourself, or several people at once.",
+    "modeSingle": "Single registration",
+    "modeSingleHelp": "I'm registering only myself.",
+    "modeFamily": "Family registration",
+    "modeFamilyHelp": "I'm registering my family or a group.",
+    "noModeSelected": "Choose a registration type to continue.",
+    "singleTypeTitle": "What type of participant are you?",
+    "singleTypeHelp": "Pick the option that describes you."
   },
   "validation": {
     "required": "This field is required",
@@ -81,7 +90,8 @@
     "tooLong": "Too long",
     "tooSmall": "Too small",
     "tooBig": "Too big",
-    "notAnOption": "Choose one of the listed options"
+    "notAnOption": "Choose one of the listed options",
+    "phoneCode": "Select a country code"
   },
   "status": {
     "pending": "Pending",
@@ -249,8 +259,33 @@
     "loadError": "Could not load participants. Adjust your search or try again.",
     "navHome": "Home",
     "navMyEvents": "My Events",
+    "newForm": "New form",
+    "newFormTitle": "Create a form",
+    "newFormError": "Could not create the form. Please try again.",
+    "formMode": "Form type",
+    "formKindSingle": "Single response form",
+    "formKindFamily": "Family response form",
+    "formModeSingle": "Single",
+    "formModeFamily": "Family",
+    "formModeSingleHelp": "Shown when a respondent registers only themself.",
+    "formModeFamilyHelp": "Shown when a respondent registers a family or group.",
+    "copyQuestionsFrom": "Copy questions from",
+    "copyQuestionsHelp": "Reuse the questions of an existing form so you don't have to rebuild them.",
+    "startBlank": "Start blank",
+    "publishNeedsQuestion": "A form must include at least one question",
+    "nameFormat": "Name format",
+    "nameFormatFirstLast": "First + last name",
+    "nameFormatFull": "Full name (one field)",
+    "nameFormatFirstMiddleLast": "First + middle + last name",
+    "addressParts": "Address fields",
     "viewDetail": "View",
-    "participantDetail": "Participant details"
+    "participantDetail": "Participant details",
+    "joinEvents": "Join events",
+    "joinEventsHelp": "You can request access to organize or view other events in this organization.",
+    "joinEventsAllAccess": "You have admin access and can view all events.",
+    "joinEventsEmpty": "There are no other active events to join.",
+    "joinByCode": "Join by event code",
+    "joinByCodeHelp": "Enter the event's slug/code (e.g. summer-conference-2026) to request organizer access."
   },
   "questionTypes": {
     "text": "Short text",
@@ -264,7 +299,9 @@
     "email": "Email",
     "phone": "Phone",
     "file": "File upload",
-    "section": "Section header"
+    "section": "Section header",
+    "name": "Name",
+    "address": "Address"
   },
   "profile": {
     "title": "My profile",
@@ -273,12 +310,30 @@
     "fullName": "Full name",
     "language": "Preferred language",
     "saved": "Saved",
-    "updateError": "Something went wrong. Please try again.",
     "namePromptTitle": "What's your name?",
     "namePromptIntro": "Add your name so organizers know who you are. You can change it later in your profile.",
     "firstName": "First name",
     "lastName": "Last name",
     "namePromptSkip": "Skip for now",
-    "namePromptRequired": "Please enter your first and last name."
+    "namePromptRequired": "Please enter your first and last name.",
+    "theme": "Appearance",
+    "themeHelp": "Choose light or dark, or follow your device.",
+    "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "updateError": "Something went wrong. Please try again."
+  },
+  "runtime": {
+    "firstName": "First name",
+    "middleName": "Middle name",
+    "lastName": "Last name",
+    "fullName": "Full name",
+    "phoneCountryCode": "Country code",
+    "address_line1": "Address line 1",
+    "address_line2": "Address line 2",
+    "address_city": "City",
+    "address_state": "State / Province",
+    "address_postalCode": "Postal code",
+    "address_country": "Country"
   }
 }
