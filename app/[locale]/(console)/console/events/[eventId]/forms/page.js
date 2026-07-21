@@ -51,7 +51,7 @@ export default async function FormsPage({ params }) {
                       </Badge>
                     ) : (
                       <span
-                        className="tip"
+                        className="tip tip-right"
                         data-tip={t('defaultFormTip')}
                         tabIndex={0}
                         style={{ display: 'inline-flex', gap: '0.3rem', alignItems: 'center' }}

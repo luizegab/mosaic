@@ -444,3 +444,12 @@
 .tip:focus-visible::after {
   opacity: 1;
 }
+
+/* Right-side tooltip placement: use inside overflow containers (tables),
+   where an above-the-element tooltip gets clipped at the box edge. */
+.tip-right::after {
+  bottom: auto;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
