@@ -24,14 +24,6 @@ export function HomeEventsList({ events }) {
       )
     : events
 
-  if (events.length === 0) {
-    return (
-      <p style={{ marginTop: 'var(--s-4)', color: 'var(--ink-soft)' }}>
-        {t('noEvents')}
-      </p>
-    )
-  }
-
   return (
     <>
       <div className={styles.searchRow}>
@@ -45,7 +37,7 @@ export function HomeEventsList({ events }) {
       </div>
       {visible.length === 0 ? (
         <p style={{ marginTop: 'var(--s-4)', color: 'var(--ink-soft)' }}>
-          {t('noSearchResults')}
+          {events.length === 0 ? t('noEvents') : t('noSearchResults')}
         </p>
       ) : (
         <ul className={styles.grid}>
