@@ -22,6 +22,7 @@ export function ParticipantDetail({
   canEdit,
   onClose,
   onSaved,
+  endpointBase = '/api/participants',
 }) {
   const t = useTranslations()
   const locale = useLocale()
@@ -59,7 +60,7 @@ export function ParticipantDetail({
 
     setSaveState('saving')
     try {
-      const r = await fetch(`/api/participants/${participant.id}`, {
+      const r = await fetch(`${endpointBase}/${participant.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, lastName, email, answers }),
