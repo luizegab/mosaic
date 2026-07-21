@@ -331,7 +331,8 @@
     "sectionOrder": "Section Order",
     "sectionOrderHelp": "Reorder how sections appear on the page. The hero always stays on top.",
     "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveDown": "Move down",
+    "alignDefault": "Default Alignment"
   },
   "questionTypes": {
     "text": "Short text",

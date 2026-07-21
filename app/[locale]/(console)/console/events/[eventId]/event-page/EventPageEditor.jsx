@@ -143,6 +143,16 @@ function HeadingStyleEditor({ t, previewLocale, data = {}, defaultHeading, onPat
         )}
       </Field>
       <StyleSelects t={t} style={hs} onChange={setStyle} />
+      <NativeSelect
+        value={hs.align ?? ''}
+        onChange={(e) => setStyle({ ...hs, align: e.target.value || undefined })}
+        aria-label={t('titleAlign')}
+      >
+        <option value="">{t('alignDefault')}</option>
+        <option value="left">{t('alignLeft')}</option>
+        <option value="center">{t('alignCenter')}</option>
+        <option value="right">{t('alignRight')}</option>
+      </NativeSelect>
       <ColorField
         label={t('headingColor')}
         addLabel={t('addColor')}
@@ -450,7 +460,17 @@ export function EventPageEditor({ initialEvent }) {
   )
 
   // Per-section background color control (About / Speakers / Agenda / Tickets / Contact).
-  const HEADING_SECTIONS = ['about', 'speakers', 'agenda', 'tickets']
+  const HEADING_SECTIONS = [
+    'about',
+    'speakers',
+    'tracks',
+    'agenda',
+    'testimonials',
+    'gallery',
+    'faq',
+    'tickets',
+    'map',
+  ]
 
   const sectionBgField = (section) => (
     <ColorField

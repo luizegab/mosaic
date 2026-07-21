@@ -331,7 +331,8 @@
     "sectionOrder": "Ordre des sections",
     "sectionOrderHelp": "Réorganisez l'ordre des sections sur la page. L'en-tête reste toujours en haut.",
     "moveUp": "Monter",
-    "moveDown": "Descendre"
+    "moveDown": "Descendre",
+    "alignDefault": "Alignement par défaut"
   },
   "questionTypes": {
     "text": "Texte court",

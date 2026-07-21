@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { lt } from '@/lib/i18n/locales'
 import { eventMediaUrl } from '@/lib/storage'
+import { textStyle } from './text-style'
 import styles from './sections-extra.module.css'
 
 /*
@@ -76,11 +77,7 @@ function Heading({ text, style, centered }) {
   )
 }
 
-function headingStyle(hs = {}) {
-  const s = {}
-  if (hs.color) s.color = hs.color
-  return s
-}
+const headingStyle = (hs) => textStyle(hs ?? {})
 
 /* ---------------- Tracks ---------------- */
 

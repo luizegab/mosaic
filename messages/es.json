@@ -331,7 +331,8 @@
     "sectionOrder": "Orden de las secciones",
     "sectionOrderHelp": "Reordena cómo aparecen las secciones en la página. El encabezado siempre queda arriba.",
     "moveUp": "Subir",
-    "moveDown": "Bajar"
+    "moveDown": "Bajar",
+    "alignDefault": "Alineación por defecto"
   },
   "questionTypes": {
     "text": "Texto corto",
