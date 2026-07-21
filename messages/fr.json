@@ -356,7 +356,8 @@
     "posBottom": "Bas",
     "imageHeight": "Hauteur de l'image",
     "videoUrl": "URL de la vidéo (YouTube, Vimeo ou .mp4)",
-    "videoHelp": "Collez un lien vidéo — il s'affiche à la place de l'image."
+    "videoHelp": "Collez un lien vidéo — il s'affiche à la place de l'image.",
+    "heroOpacityHelp": "Teinte l'image de couverture. Sans image, la couleur remplit l'en-tête en plein."
   },
   "questionTypes": {
     "text": "Texte court",

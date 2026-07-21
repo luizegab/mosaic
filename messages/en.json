@@ -356,7 +356,8 @@
     "posBottom": "Bottom",
     "imageHeight": "Image Height",
     "videoUrl": "Video URL (YouTube, Vimeo or .mp4)",
-    "videoHelp": "Paste a video link — it shows instead of the image."
+    "videoHelp": "Paste a video link — it shows instead of the image.",
+    "heroOpacityHelp": "Tints the cover image. With no image the color fills the hero solid."
   },
   "questionTypes": {
     "text": "Short text",

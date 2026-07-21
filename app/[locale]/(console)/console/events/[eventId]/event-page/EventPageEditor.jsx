@@ -591,7 +591,7 @@ export function EventPageEditor({ initialEvent }) {
           defaultValue={isDark ? '#000000' : '#ffffff'}
           onChange={(c) => setTheme({ hero_bg: c ?? undefined })}
         />
-        {theme.hero_bg && (
+        {theme.hero_bg && event.cover_image_path && (
           <div className={styles.colorField}>
             <span className="field-label">
               {t('heroOpacity')}: {theme.hero_opacity ?? 100}%
@@ -604,6 +604,7 @@ export function EventPageEditor({ initialEvent }) {
               value={theme.hero_opacity ?? 100}
               onChange={(e) => setTheme({ hero_opacity: Number(e.target.value) })}
             />
+            <p className="field-help">{t('heroOpacityHelp')}</p>
           </div>
         )}
         <ColorField

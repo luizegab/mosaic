@@ -223,17 +223,18 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
     TITLE_SIZES
   )
 
-  // Optional hero background color + opacity. Over a cover image it becomes a
-  // tint overlay; with no image it fills the hero section.
-  const heroTint = hexToRgba(theme.hero_bg, theme.hero_opacity)
+  // Hero background color + opacity. Opacity only makes sense as a tint OVER a
+  // cover image; with no image the color fills the hero solid (a translucent
+  // fill would just blend with the page behind it and look washed out/white).
+  const heroTint = coverUrl ? hexToRgba(theme.hero_bg, theme.hero_opacity) : null
 
   // With no cover image, let the hero adopt the chosen colors so theme changes
   // are visible at the very top of the page (otherwise it keeps its default
-  // pine gradient and looks unaffected).
+  // dark background and looks unaffected).
   const flatHero = !coverUrl && (theme.hero_bg || theme.page_bg || theme.text_color)
   const heroStyle = {}
   if (flatHero) {
-    if (heroTint) heroStyle.background = heroTint
+    if (theme.hero_bg) heroStyle.background = theme.hero_bg
     else if (theme.page_bg) heroStyle.background = theme.page_bg
     if (theme.text_color) heroStyle.color = theme.text_color
   }

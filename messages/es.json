@@ -356,7 +356,8 @@
     "posBottom": "Abajo",
     "imageHeight": "Altura de la imagen",
     "videoUrl": "URL del video (YouTube, Vimeo o .mp4)",
-    "videoHelp": "Pega un enlace de video — se muestra en lugar de la imagen."
+    "videoHelp": "Pega un enlace de video — se muestra en lugar de la imagen.",
+    "heroOpacityHelp": "Tiñe la imagen de portada. Sin imagen, el color rellena el encabezado sólido."
   },
   "questionTypes": {
     "text": "Texto corto",
