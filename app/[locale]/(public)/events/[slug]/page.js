@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { setRequestLocale } from 'next-intl/server'
 import { getSupabaseAnonClient } from '@/lib/supabase/server'
 import { lt, LOCALES } from '@/lib/i18n/locales'
+import { eventMediaUrl } from '@/lib/storage'
 import { EventPageView } from '@/components/event-page/EventPageView'
 
 export const revalidate = 300
@@ -21,7 +22,8 @@ export async function generateMetadata({ params }) {
   const { slug, locale } = await params
   const event = await getEvent(slug)
   if (!event) return {}
-  return {
+  const faviconPath = event.page_content?.favicon_path
+  const meta = {
     title: lt(event.name, locale, event.default_locale),
     description: lt(event.description, locale, event.default_locale)?.slice(0, 160),
     alternates: {
@@ -30,6 +32,8 @@ export async function generateMetadata({ params }) {
       ),
     },
   }
+  if (faviconPath) meta.icons = { icon: eventMediaUrl(faviconPath) }
+  return meta
 }
 
 export default async function EventPage({ params }) {

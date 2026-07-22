@@ -31,6 +31,56 @@ const SECTIONS = [
   'contact',
 ]
 const TRACK_COLORS = ['#3d7ea6', '#e8a33d', '#e2725b', '#146b5c']
+
+// One-click theme presets applied over the current theme.
+const THEME_PRESETS = {
+  light: {
+    page_bg: '#ffffff',
+    text_color: '#111111',
+    title_color: '#111111',
+    hero_bg: '#111111',
+    primary_color: '#111111',
+    accent_color: '#e8a33d',
+  },
+  dark: {
+    page_bg: '#14161b',
+    text_color: '#eceae4',
+    title_color: '#ffffff',
+    hero_bg: '#0e5044',
+    primary_color: '#3ba58f',
+    accent_color: '#e8a33d',
+  },
+  brand: {
+    page_bg: '#faf9f6',
+    text_color: '#20242b',
+    title_color: '#146b5c',
+    hero_bg: '#0e5044',
+    primary_color: '#146b5c',
+    accent_color: '#e8a33d',
+    btn_bg: '#e8a33d',
+    btn_text: '#2b1f08',
+  },
+}
+
+// Relative luminance → WCAG contrast ratio between two hex colors.
+function contrastRatio(a, b) {
+  const lum = (hex) => {
+    if (!hex) return null
+    const h = hex.replace('#', '')
+    const f = h.length === 3 ? h.split('').map((c) => c + c).join('') : h
+    const ch = [0, 2, 4].map((i) => {
+      const v = parseInt(f.slice(i, i + 2), 16) / 255
+      return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+    })
+    if (ch.some(Number.isNaN)) return null
+    return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2]
+  }
+  const l1 = lum(a)
+  const l2 = lum(b)
+  if (l1 == null || l2 == null) return null
+  const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1]
+  return (hi + 0.05) / (lo + 0.05)
+}
 const SIZE_OPTIONS = ['', 'sm', 'md', 'lg', 'xl']
 
 function newId() {
@@ -228,6 +278,7 @@ export function EventPageEditor({ initialEvent }) {
   const [previewLocale, setPreviewLocale] = useState(
     LOCALES.includes(uiLocale) ? uiLocale : initialEvent.default_locale
   )
+  const [previewDevice, setPreviewDevice] = useState('desktop') // desktop | mobile
   const [panelSection, setPanelSection] = useState(null) // null = closed
   const [dirty, setDirty] = useState(false)
   const [saveState, setSaveState] = useState('idle')
@@ -246,6 +297,8 @@ export function EventPageEditor({ initialEvent }) {
   const galleryInputRef = useRef(null)
   const galleryUploadTarget = useRef(null)
   const mapImgInputRef = useRef(null)
+  const logoInputRef = useRef(null)
+  const faviconInputRef = useRef(null)
 
   useEffect(() => {
     setOrigin(window.location.origin)
@@ -429,6 +482,32 @@ export function EventPageEditor({ initialEvent }) {
     e.target.value = ''
   }
 
+  async function onLogoFile(e) {
+    const file = e.target.files?.[0]
+    if (file) {
+      const path = await upload(file, 'logo')
+      if (path) patchContent('logo', { path })
+    }
+    e.target.value = ''
+  }
+
+  function setTopLevel(key, value) {
+    setEvent((prev) => ({
+      ...prev,
+      page_content: { ...(prev.page_content ?? {}), [key]: value },
+    }))
+    markDirty()
+  }
+
+  async function onFaviconFile(e) {
+    const file = e.target.files?.[0]
+    if (file) {
+      const path = await upload(file, 'favicon')
+      if (path) setTopLevel('favicon_path', path)
+    }
+    e.target.value = ''
+  }
+
   async function onMapImgFile(e) {
     const file = e.target.files?.[0]
     if (file) {
@@ -558,8 +637,72 @@ export function EventPageEditor({ initialEvent }) {
   function renderTheme() {
     const theme = content.theme ?? {}
     const setTheme = (patch) => patchContent('theme', patch)
+    const logo = content.logo ?? {}
+    const availableLocales =
+      Array.isArray(content.i18n?.available) && content.i18n.available.length
+        ? content.i18n.available
+        : LOCALES.filter((l) => (event.name?.[l] ?? '').trim() !== '')
+    const toggleLocale = (l) => {
+      const base = availableLocales.length ? availableLocales : [event.default_locale]
+      const next = base.includes(l) ? base.filter((x) => x !== l) : [...base, l]
+      patchContent('i18n', { available: next.length ? next : [event.default_locale] })
+    }
+    // Contrast check on the effective page text vs background.
+    const bg = theme.page_bg || (isDark ? '#14161b' : '#ffffff')
+    const fg = theme.text_color || (isDark ? '#eceae4' : '#111111')
+    const ratio = contrastRatio(fg, bg)
+    const lowContrast = ratio != null && ratio < 4.5
+
     return (
       <>
+        {/* ---- Presets ---- */}
+        <h4 className={styles.panelSubhead}>{t('themePresets')}</h4>
+        <div className={styles.panelRow}>
+          <Button variant="secondary" size="sm" onClick={() => setTheme(THEME_PRESETS.light)}>
+            {t('presetLight')}
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setTheme(THEME_PRESETS.dark)}>
+            {t('presetDark')}
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setTheme(THEME_PRESETS.brand)}>
+            {t('presetBrand')}
+          </Button>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => patchContent('theme', {
+            page_bg: undefined, text_color: undefined, title_color: undefined,
+            primary_color: undefined, accent_color: undefined, hero_bg: undefined,
+            hero_opacity: undefined, btn_bg: undefined, btn_text: undefined, btn_style: undefined,
+            body_font: undefined, title_font: undefined, title_size: undefined,
+            text_scale: undefined, radius: undefined, width: undefined, density: undefined,
+          })}
+        >
+          {t('resetToDefault')}
+        </Button>
+
+        {/* ---- Colors & brand ---- */}
+        <h4 className={styles.panelSubhead}>{t('groupColors')}</h4>
+        <div className={styles.colorPair}>
+          <ColorField
+            label={t('primaryColor')}
+            addLabel={t('addColor')}
+            resetLabel={t('resetColor')}
+            value={theme.primary_color}
+            defaultValue={isDark ? '#3ba58f' : '#146b5c'}
+            onChange={(c) => setTheme({ primary_color: c ?? undefined })}
+          />
+          <ColorField
+            label={t('accentColor')}
+            addLabel={t('addColor')}
+            resetLabel={t('resetColor')}
+            value={theme.accent_color}
+            defaultValue="#e8a33d"
+            onChange={(c) => setTheme({ accent_color: c ?? undefined })}
+          />
+        </div>
+        <p className="field-help">{t('primaryColorHelp')}</p>
         <div className={styles.colorPair}>
           <ColorField
             label={t('pageBackground')}
@@ -578,10 +721,120 @@ export function EventPageEditor({ initialEvent }) {
             onChange={(c) => setTheme({ text_color: c ?? undefined })}
           />
         </div>
+        {lowContrast && (
+          <p className={`alert alert-error ${styles.uploadNote}`}>
+            {t('contrastWarning', { ratio: ratio.toFixed(1) })}
+          </p>
+        )}
+        <ColorField
+          label={t('titleColor')}
+          addLabel={t('addColor')}
+          resetLabel={t('resetColor')}
+          value={theme.title_color}
+          defaultValue={isDark ? '#ffffff' : '#000000'}
+          onChange={(c) => setTheme({ title_color: c ?? undefined })}
+        />
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={!theme.title_color}
+          onClick={() => applyColorToAllHeadings(theme.title_color)}
+        >
+          {t('applyToAllTitles')}
+        </Button>
+
+        {/* ---- Buttons ---- */}
+        <h4 className={styles.panelSubhead}>{t('registerButtonStyle')}</h4>
         <div className={styles.colorField}>
-          <span className="field-label">{t('pageFont')}</span>
+          <span className="field-label">{t('buttonStyle')}</span>
+          <NativeSelect
+            value={theme.btn_style ?? 'fill'}
+            onChange={(e) => setTheme({ btn_style: e.target.value })}
+          >
+            <option value="fill">{t('btnFill')}</option>
+            <option value="outline">{t('btnOutline')}</option>
+            <option value="pill">{t('btnPill')}</option>
+          </NativeSelect>
+        </div>
+        <div className={styles.colorPair}>
+          <ColorField
+            label={t('buttonBackground')}
+            addLabel={t('addColor')}
+            resetLabel={t('resetColor')}
+            value={theme.btn_bg}
+            defaultValue={isDark ? '#000000' : '#ffffff'}
+            onChange={(c) => setTheme({ btn_bg: c ?? undefined })}
+          />
+          <ColorField
+            label={t('buttonTextColor')}
+            addLabel={t('addColor')}
+            resetLabel={t('resetColor')}
+            value={theme.btn_text}
+            defaultValue={isDark ? '#ffffff' : '#000000'}
+            onChange={(c) => setTheme({ btn_text: c ?? undefined })}
+          />
+        </div>
+
+        {/* ---- Typography ---- */}
+        <h4 className={styles.panelSubhead}>{t('groupTypography')}</h4>
+        <div className={styles.colorField}>
+          <span className="field-label">{t('titleFontLabel')}</span>
+          <FontSelect t={t} value={theme.title_font} onChange={(f) => setTheme({ title_font: f })} />
+        </div>
+        <div className={styles.colorField}>
+          <span className="field-label">{t('bodyFontLabel')}</span>
           <FontSelect t={t} value={theme.body_font} onChange={(f) => setTheme({ body_font: f })} />
         </div>
+        <p className="field-help">{t('fontScopeHelp')}</p>
+        <div className={styles.colorField}>
+          <span className="field-label">{t('textScale')}</span>
+          <NativeSelect
+            value={theme.text_scale ?? 'normal'}
+            onChange={(e) => setTheme({ text_scale: e.target.value })}
+          >
+            <option value="compact">{t('scaleCompact')}</option>
+            <option value="normal">{t('scaleNormal')}</option>
+            <option value="large">{t('scaleLarge')}</option>
+          </NativeSelect>
+        </div>
+
+        {/* ---- Shape & layout ---- */}
+        <h4 className={styles.panelSubhead}>{t('groupLayout')}</h4>
+        <div className={styles.colorField}>
+          <span className="field-label">{t('cornerRadius')}</span>
+          <NativeSelect
+            value={theme.radius ?? 'normal'}
+            onChange={(e) => setTheme({ radius: e.target.value })}
+          >
+            <option value="square">{t('radiusSquare')}</option>
+            <option value="normal">{t('radiusNormal')}</option>
+            <option value="round">{t('radiusRound')}</option>
+          </NativeSelect>
+        </div>
+        <div className={styles.colorField}>
+          <span className="field-label">{t('contentWidth')}</span>
+          <NativeSelect
+            value={theme.width ?? 'normal'}
+            onChange={(e) => setTheme({ width: e.target.value })}
+          >
+            <option value="narrow">{t('widthNarrow')}</option>
+            <option value="normal">{t('widthNormal')}</option>
+            <option value="wide">{t('widthWide')}</option>
+          </NativeSelect>
+        </div>
+        <div className={styles.colorField}>
+          <span className="field-label">{t('sectionDensity')}</span>
+          <NativeSelect
+            value={theme.density ?? 'normal'}
+            onChange={(e) => setTheme({ density: e.target.value })}
+          >
+            <option value="compact">{t('densityCompact')}</option>
+            <option value="normal">{t('densityNormal')}</option>
+            <option value="spacious">{t('densitySpacious')}</option>
+          </NativeSelect>
+        </div>
+
+        {/* ---- Hero background (title area) ---- */}
         <h4 className={styles.panelSubhead}>{t('heroTitleStyle')}</h4>
         <ColorField
           label={t('heroBackground')}
@@ -607,22 +860,6 @@ export function EventPageEditor({ initialEvent }) {
             <p className="field-help">{t('heroOpacityHelp')}</p>
           </div>
         )}
-        <ColorField
-          label={t('titleColor')}
-          addLabel={t('addColor')}
-          resetLabel={t('resetColor')}
-          value={theme.title_color}
-          defaultValue={isDark ? '#ffffff' : '#000000'}
-          onChange={(c) => setTheme({ title_color: c ?? undefined })}
-        />
-        <Button
-          variant="secondary"
-          size="sm"
-          disabled={!theme.title_color}
-          onClick={() => applyColorToAllHeadings(theme.title_color)}
-        >
-          {t('applyToAllTitles')}
-        </Button>
         <StyleSelects
           t={t}
           style={{ size: theme.title_size, font: theme.title_font }}
@@ -639,26 +876,74 @@ export function EventPageEditor({ initialEvent }) {
             <option value="right">{t('alignRight')}</option>
           </NativeSelect>
         </div>
-        <h4 className={styles.panelSubhead}>{t('registerButtonStyle')}</h4>
-        <div className={styles.colorPair}>
-          <ColorField
-            label={t('buttonBackground')}
-            addLabel={t('addColor')}
-            resetLabel={t('resetColor')}
-            value={theme.btn_bg}
-            defaultValue={isDark ? '#000000' : '#ffffff'}
-            onChange={(c) => setTheme({ btn_bg: c ?? undefined })}
-          />
-          <ColorField
-            label={t('buttonTextColor')}
-            addLabel={t('addColor')}
-            resetLabel={t('resetColor')}
-            value={theme.btn_text}
-            defaultValue={isDark ? '#ffffff' : '#000000'}
-            onChange={(c) => setTheme({ btn_text: c ?? undefined })}
-          />
-        </div>
 
+        {/* ---- Identity: logo + favicon ---- */}
+        <h4 className={styles.panelSubhead}>{t('groupIdentity')}</h4>
+        <input ref={logoInputRef} type="file" accept="image/*" hidden onChange={onLogoFile} />
+        {logo.path && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img className={styles.panelThumb} src={eventMediaUrl(logo.path)} alt="" />
+        )}
+        <div className={styles.panelRow}>
+          <Button variant="secondary" size="sm" onClick={() => logoInputRef.current?.click()}>
+            {logo.path ? t('changeLogo') : t('uploadLogo')}
+          </Button>
+          {logo.path && (
+            <Button variant="ghost" size="sm" onClick={() => patchContent('logo', { path: null })}>
+              {t('remove')}
+            </Button>
+          )}
+        </div>
+        {logo.path && (
+          <div className={styles.colorField}>
+            <span className="field-label">{t('logoPosition')}</span>
+            <NativeSelect
+              value={logo.position ?? 'left'}
+              onChange={(e) => patchContent('logo', { position: e.target.value })}
+            >
+              <option value="left">{t('alignLeft')}</option>
+              <option value="center">{t('alignCenter')}</option>
+            </NativeSelect>
+          </div>
+        )}
+        <input ref={faviconInputRef} type="file" accept="image/*" hidden onChange={onFaviconFile} />
+        <div className={styles.panelRow}>
+          <Button variant="secondary" size="sm" onClick={() => faviconInputRef.current?.click()}>
+            {content.favicon_path ? t('changeFavicon') : t('uploadFavicon')}
+          </Button>
+          {content.favicon_path && (
+            <Button variant="ghost" size="sm" onClick={() => setTopLevel('favicon_path', undefined)}>
+              {t('remove')}
+            </Button>
+          )}
+        </div>
+        <p className="field-help">{t('faviconHelp')}</p>
+
+        {/* ---- Languages ---- */}
+        <h4 className={styles.panelSubhead}>{t('groupLanguages')}</h4>
+        <div className={styles.colorField}>
+          <span className="field-label">{t('defaultLanguage')}</span>
+          <NativeSelect
+            value={event.default_locale}
+            onChange={(e) => patchEvent({ default_locale: e.target.value })}
+          >
+            {LOCALES.map((l) => (
+              <option key={l} value={l}>{LOCALE_NAMES[l]}</option>
+            ))}
+          </NativeSelect>
+        </div>
+        <span className="field-label">{t('availableLanguages')}</span>
+        {LOCALES.map((l) => (
+          <CheckboxRow
+            key={l}
+            label={LOCALE_NAMES[l]}
+            checked={availableLocales.includes(l)}
+            onCheckedChange={() => toggleLocale(l)}
+          />
+        ))}
+        <p className="field-help">{t('availableLanguagesHelp')}</p>
+
+        {/* ---- Section order ---- */}
         <h4 className={styles.panelSubhead}>{t('sectionOrder')}</h4>
         <p className="field-help">{t('sectionOrderHelp')}</p>
         <div className={styles.orderList}>
@@ -691,6 +976,7 @@ export function EventPageEditor({ initialEvent }) {
       </>
     )
   }
+
 
   function renderBasics() {
     return (
@@ -1610,6 +1896,24 @@ export function EventPageEditor({ initialEvent }) {
             {t('customize')}
           </Button>
           <p className={styles.hint}>{t('pagePreviewHint')}</p>
+          <div className={styles.localeSwitch} role="tablist" aria-label={t('previewDevice')}>
+            <button
+              type="button"
+              data-active={previewDevice === 'desktop'}
+              aria-label={t('deviceDesktop')}
+              onClick={() => setPreviewDevice('desktop')}
+            >
+              🖥
+            </button>
+            <button
+              type="button"
+              data-active={previewDevice === 'mobile'}
+              aria-label={t('deviceMobile')}
+              onClick={() => setPreviewDevice('mobile')}
+            >
+              📱
+            </button>
+          </div>
           <div className={styles.localeSwitch} role="tablist" aria-label="Preview language">
             {LOCALES.map((l) => (
               <button
@@ -1648,13 +1952,15 @@ export function EventPageEditor({ initialEvent }) {
 
       {/* ---- preview + panel ---- */}
       <div className={`${styles.split} ${panelSection ? styles.splitOpen : ''}`}>
-        <section className={styles.frame}>
-          <EventPageView
-            event={event}
-            locale={previewLocale}
-            editable
-            onEditSection={(s) => setPanelSection(s)}
-          />
+        <section className={styles.frame} data-device={previewDevice}>
+          <div className={styles.frameInner}>
+            <EventPageView
+              event={event}
+              locale={previewLocale}
+              editable
+              onEditSection={(s) => setPanelSection(s)}
+            />
+          </div>
         </section>
 
         {panelSection && (

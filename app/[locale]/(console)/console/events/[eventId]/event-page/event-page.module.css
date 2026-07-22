@@ -104,6 +104,23 @@
   min-width: 0;
 }
 
+/* Mobile preview: constrain the rendered page to a phone width, centered. */
+.frame[data-device='mobile'] {
+  background: var(--surface-sunken);
+  padding: var(--s-4);
+  display: flex;
+  justify-content: center;
+}
+
+.frame[data-device='mobile'] .frameInner {
+  width: 390px;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface);
+}
+
 /* ---- customize panel ---- */
 
 .panel {

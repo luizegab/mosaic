@@ -2,7 +2,7 @@
 
 import { Fragment } from 'react'
 import { useTranslations } from 'next-intl'
-import { lt } from '@/lib/i18n/locales'
+import { lt, LOCALES } from '@/lib/i18n/locales'
 import { formatEventDate, formatEventDateRange } from '@/lib/dates'
 import { eventMediaUrl } from '@/lib/storage'
 import { StatIcon } from './stat-icons'
@@ -212,6 +212,8 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
   const pageStyle = {}
   if (theme.page_bg) pageStyle['--ep-bg'] = theme.page_bg
   if (theme.text_color) pageStyle['--ep-text'] = theme.text_color
+  if (theme.primary_color) pageStyle['--ep-primary'] = theme.primary_color
+  if (theme.accent_color) pageStyle['--ep-accent'] = theme.accent_color
   if (theme.btn_bg) pageStyle['--ep-btn-bg'] = theme.btn_bg
   if (theme.btn_text) pageStyle['--ep-btn-text'] = theme.btn_text
   if (theme.body_font && FONT_FAMILIES[theme.body_font]) {
@@ -250,6 +252,49 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
   )
   const registerButton = (
     <RegisterCta editable={editable} registerHref={registerHref} label={t('register')} />
+  )
+
+  // Logo + language switcher bar pinned to the top of the hero.
+  const logo = content.logo ?? {}
+  const logoUrl = eventMediaUrl(logo.path)
+  const availableLocales = (
+    Array.isArray(content.i18n?.available) && content.i18n.available.length
+      ? content.i18n.available
+      : event.supported_locales?.length
+        ? event.supported_locales
+        : [dl]
+  ).filter((l) => LOCALES.includes(l))
+  const showLangSwitch = availableLocales.length > 1
+  const eventSlug = event.slug
+
+  const heroTopBar = (logoUrl || showLangSwitch) && (
+    <div className={styles.heroTopBar} data-logo-pos={logo.position || 'left'}>
+      {logoUrl ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img className={styles.heroLogo} src={logoUrl} alt="" />
+      ) : (
+        <span />
+      )}
+      {showLangSwitch && (
+        <nav className={styles.langSwitch} aria-label="Language">
+          {availableLocales.map((l) =>
+            editable ? (
+              <span key={l} data-active={l === locale ? '' : undefined}>
+                {l.toUpperCase()}
+              </span>
+            ) : (
+              <a
+                key={l}
+                href={`/${l}/events/${eventSlug}`}
+                data-active={l === locale ? '' : undefined}
+              >
+                {l.toUpperCase()}
+              </a>
+            )
+          )}
+        </nav>
+      )}
+    </div>
   )
 
   const countdownTone = coverUrl
@@ -563,10 +608,16 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
       style={pageStyle}
       data-custom-bg={theme.page_bg ? '' : undefined}
       data-custom-text={theme.text_color ? '' : undefined}
+      data-scale={theme.text_scale && theme.text_scale !== 'normal' ? theme.text_scale : undefined}
+      data-radius={theme.radius && theme.radius !== 'normal' ? theme.radius : undefined}
+      data-width={theme.width && theme.width !== 'normal' ? theme.width : undefined}
+      data-density={theme.density && theme.density !== 'normal' ? theme.density : undefined}
+      data-btn-style={theme.btn_style && theme.btn_style !== 'fill' ? theme.btn_style : undefined}
     >
       {/* ---- Hero ---- */}
       {heroVariant === 'split' ? (
         <Section section="hero" className={styles.heroSplit} {...sectionProps}>
+          {heroTopBar}
           <div className={`container ${styles.heroSplitInner}`}>
             <div className={styles.heroSplitText}>{heroBody}</div>
             <div className={styles.heroSplitMedia}>
@@ -600,6 +651,7 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
           {coverUrl && heroTint && (
             <div className={styles.heroTint} style={{ background: heroTint }} aria-hidden="true" />
           )}
+          {heroTopBar}
           <div
             className={`container ${styles.heroInner}`}
             data-align={theme.title_align || undefined}
