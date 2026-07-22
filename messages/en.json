@@ -542,14 +542,13 @@
     "availableLanguages": "Available Languages",
     "availableLanguagesHelp": "Visitors can switch between the languages you enable here.",
     "previewDevice": "Preview device",
-    "deviceDesktop": "Desktop",
-    "deviceMobile": "Mobile",
+    "deviceDesktop": "Desktop View",
+    "deviceMobile": "Mobile View",
     "logoPlacement": "Logo Placement",
     "placementTop": "Top of hero",
     "placementBottom": "Bottom of hero",
     "groupEventDetails": "Event Details",
-    "groupHero": "Hero",
-    "autoTranslateTo": "Translate to"
+    "groupHero": "Hero"
   },
   "questionTypes": {
     "text": "Short text",

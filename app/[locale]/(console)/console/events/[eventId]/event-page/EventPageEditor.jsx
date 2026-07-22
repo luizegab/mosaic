@@ -299,96 +299,7 @@ export function EventPageEditor({ initialEvent }) {
   const logoInputRef = useRef(null)
   const faviconInputRef = useRef(null)
 
-  const [isTranslating, setIsTranslating] = useState(false)
 
-  async function autoTranslateAll() {
-    setIsTranslating(true)
-    const source = event.default_locale || 'en'
-    const target = previewLocale
-
-    async function translateVal(map) {
-      if (!map) return map
-      const textToTranslate = map[source] || Object.values(map).find(v => typeof v === 'string' && v.trim() !== '')
-      if (!textToTranslate) return map
-      try {
-        const res = await fetch('/api/translate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: textToTranslate,
-            targetLocale: target,
-            sourceLocale: source,
-          }),
-        })
-        if (!res.ok) return map
-        const data = await res.json()
-        if (data && data.translation) {
-          return { ...map, [target]: data.translation }
-        }
-      } catch (err) {
-        console.error('Translation error:', err)
-      }
-      return map
-    }
-
-    try {
-      const nextName = await translateVal(event.name)
-      const nextDesc = await translateVal(event.description)
-      const nextLoc = await translateVal(event.location)
-
-      const pc = { ...(event.page_content ?? {}) }
-
-      for (const sectionKey of Object.keys(pc)) {
-        const sec = { ...pc[sectionKey] }
-        if (sec.heading) {
-          sec.heading = await translateVal(sec.heading)
-        }
-        if (sec.body) {
-          sec.body = await translateVal(sec.body)
-        }
-        if (sec.address) {
-          sec.address = await translateVal(sec.address)
-        }
-        if (sec.stats && Array.isArray(sec.stats)) {
-          sec.stats = await Promise.all(
-            sec.stats.map(async (s) => ({
-              ...s,
-              label: await translateVal(s.label),
-            }))
-          )
-        }
-        if (sec.items && Array.isArray(sec.items)) {
-          sec.items = await Promise.all(
-            sec.items.map(async (item) => {
-              const updatedItem = { ...item }
-              const fieldsToTranslate = ['role', 'title', 'time', 'description', 'quote', 'question', 'answer', 'name', 'badge', 'features']
-              for (const field of fieldsToTranslate) {
-                if (updatedItem[field]) {
-                  updatedItem[field] = await translateVal(updatedItem[field])
-                }
-              }
-              return updatedItem
-            })
-          )
-        }
-        pc[sectionKey] = sec
-      }
-
-      setEvent((prev) => ({
-        ...prev,
-        name: nextName,
-        description: nextDesc,
-        location: nextLoc,
-        page_content: pc,
-      }))
-      setDirty(true)
-      setSaveState('idle')
-    } catch (error) {
-      console.error('Auto-translate error:', error)
-    } finally {
-      setIsTranslating(false)
-    }
-  }
 
   useEffect(() => {
     setOrigin(window.location.origin)
@@ -2003,7 +1914,7 @@ export function EventPageEditor({ initialEvent }) {
               aria-label={t('deviceDesktop')}
               onClick={() => setPreviewDevice('desktop')}
             >
-              🖥
+              {t('deviceDesktop')}
             </button>
             <button
               type="button"
@@ -2011,7 +1922,7 @@ export function EventPageEditor({ initialEvent }) {
               aria-label={t('deviceMobile')}
               onClick={() => setPreviewDevice('mobile')}
             >
-              📱
+              {t('deviceMobile')}
             </button>
           </div>
           <div className={styles.localeSwitch} role="tablist" aria-label="Preview language">
@@ -2027,17 +1938,6 @@ export function EventPageEditor({ initialEvent }) {
                 {LOCALE_NAMES[l]}
               </button>
             ))}
-            {previewLocale !== (event.default_locale || 'en') && (
-              <Button
-                size="sm"
-                variant="secondary"
-                disabled={isTranslating}
-                onClick={autoTranslateAll}
-                style={{ marginInlineStart: 'var(--s-2)', padding: '0.2rem 0.5rem', fontSize: 'var(--text-xs)', height: 'auto', display: 'inline-flex', alignItems: 'center' }}
-              >
-                {isTranslating ? '...' : `✨ ${t('autoTranslateTo')} ${LOCALE_NAMES[previewLocale]}`}
-              </Button>
-            )}
           </div>
           <div className={styles.saveStatus} aria-live="polite">
             {saveState === 'saved' && <span className="badge badge-confirmed">{t('saved')}</span>}

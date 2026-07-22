@@ -542,14 +542,13 @@
     "availableLanguages": "Langues disponibles",
     "availableLanguagesHelp": "Les visiteurs peuvent basculer entre les langues que vous activez ici.",
     "previewDevice": "Appareil d'aperçu",
-    "deviceDesktop": "Ordinateur",
-    "deviceMobile": "Mobile",
+    "deviceDesktop": "Vue ordinateur",
+    "deviceMobile": "Vue mobile",
     "logoPlacement": "Emplacement du logo",
     "placementTop": "Haut de l'en-tête",
     "placementBottom": "Bas de l'en-tête",
     "groupEventDetails": "Détails de l'événement",
-    "groupHero": "En-tête",
-    "autoTranslateTo": "Traduire en"
+    "groupHero": "En-tête"
   },
   "questionTypes": {
     "text": "Texte court",

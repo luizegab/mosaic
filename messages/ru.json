@@ -542,14 +542,13 @@
     "availableLanguages": "Доступные языки",
     "availableLanguagesHelp": "Посетители могут переключаться между языками, которые вы включите здесь.",
     "previewDevice": "Устройство предпросмотра",
-    "deviceDesktop": "Десктоп",
-    "deviceMobile": "Мобильный",
+    "deviceDesktop": "Десктопный вид",
+    "deviceMobile": "Мобильный вид",
     "logoPlacement": "Размещение логотипа",
     "placementTop": "Вверху шапки",
     "placementBottom": "Внизу шапки",
     "groupEventDetails": "Детали события",
-    "groupHero": "Шапка",
-    "autoTranslateTo": "Перевести на"
+    "groupHero": "Шапка"
   },
   "questionTypes": {
     "text": "Короткий текст",
