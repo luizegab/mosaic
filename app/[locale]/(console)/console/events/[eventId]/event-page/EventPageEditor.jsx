@@ -852,15 +852,28 @@ export function EventPageEditor({ initialEvent }) {
           )}
         </div>
         {logo.path && (
-          <div className={styles.colorField}>
-            <span className="field-label">{t('logoPosition')}</span>
-            <NativeSelect
-              value={logo.position ?? 'left'}
-              onChange={(e) => patchContent('logo', { position: e.target.value })}
-            >
-              <option value="left">{t('alignLeft')}</option>
-              <option value="center">{t('alignCenter')}</option>
-            </NativeSelect>
+          <div className={styles.colorPair}>
+            <div className={styles.colorField}>
+              <span className="field-label">{t('logoPosition')}</span>
+              <NativeSelect
+                value={logo.position ?? 'left'}
+                onChange={(e) => patchContent('logo', { position: e.target.value })}
+              >
+                <option value="left">{t('alignLeft')}</option>
+                <option value="center">{t('alignCenter')}</option>
+                <option value="right">{t('alignRight')}</option>
+              </NativeSelect>
+            </div>
+            <div className={styles.colorField}>
+              <span className="field-label">{t('logoPlacement')}</span>
+              <NativeSelect
+                value={logo.placement ?? 'top'}
+                onChange={(e) => patchContent('logo', { placement: e.target.value })}
+              >
+                <option value="top">{t('placementTop')}</option>
+                <option value="bottom">{t('placementBottom')}</option>
+              </NativeSelect>
+            </div>
           </div>
         )}
         <input ref={faviconInputRef} type="file" accept="image/*" hidden onChange={onFaviconFile} />

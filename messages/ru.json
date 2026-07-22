@@ -543,7 +543,10 @@
     "availableLanguagesHelp": "Посетители могут переключаться между языками, которые вы включите здесь.",
     "previewDevice": "Устройство предпросмотра",
     "deviceDesktop": "Десктоп",
-    "deviceMobile": "Мобильный"
+    "deviceMobile": "Мобильный",
+    "logoPlacement": "Размещение логотипа",
+    "placementTop": "Вверху шапки",
+    "placementBottom": "Внизу шапки"
   },
   "questionTypes": {
     "text": "Короткий текст",

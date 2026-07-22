@@ -254,9 +254,12 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
     <RegisterCta editable={editable} registerHref={registerHref} label={t('register')} />
   )
 
-  // Logo + language switcher bar pinned to the top of the hero.
+  // Logo + language switcher bar. Position controls horizontal alignment,
+  // placement puts the bar at the top or bottom of the hero.
   const logo = content.logo ?? {}
   const logoUrl = eventMediaUrl(logo.path)
+  const logoPos = ['left', 'center', 'right'].includes(logo.position) ? logo.position : 'left'
+  const logoAtBottom = logo.placement === 'bottom'
   const availableLocales = (
     Array.isArray(content.i18n?.available) && content.i18n.available.length
       ? content.i18n.available
@@ -268,7 +271,7 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
   const eventSlug = event.slug
 
   const heroTopBar = (logoUrl || showLangSwitch) && (
-    <div className={styles.heroTopBar} data-logo-pos={logo.position || 'left'}>
+    <div className={styles.heroTopBar} data-logo-pos={logoPos}>
       {logoUrl ? (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img className={styles.heroLogo} src={logoUrl} alt="" />
@@ -617,7 +620,7 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
       {/* ---- Hero ---- */}
       {heroVariant === 'split' ? (
         <Section section="hero" className={styles.heroSplit} {...sectionProps}>
-          {heroTopBar}
+          {!logoAtBottom && heroTopBar}
           <div className={`container ${styles.heroSplitInner}`}>
             <div className={styles.heroSplitText}>{heroBody}</div>
             <div className={styles.heroSplitMedia}>
@@ -629,6 +632,7 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
               )}
             </div>
           </div>
+          {logoAtBottom && heroTopBar}
         </Section>
       ) : (
         <Section
@@ -651,13 +655,14 @@ export function EventPageView({ event, locale, registerHref, editable = false, o
           {coverUrl && heroTint && (
             <div className={styles.heroTint} style={{ background: heroTint }} aria-hidden="true" />
           )}
-          {heroTopBar}
+          {!logoAtBottom && heroTopBar}
           <div
             className={`container ${styles.heroInner}`}
             data-align={theme.title_align || undefined}
           >
             {heroBody}
           </div>
+          {logoAtBottom && heroTopBar}
         </Section>
       )}
 

@@ -212,6 +212,11 @@
   right: var(--s-5);
 }
 
+/* Logo on the right: reverse so the logo sits at the end, language at start. */
+.heroTopBar[data-logo-pos='right'] {
+  flex-direction: row-reverse;
+}
+
 .heroLogo {
   height: 2.5rem;
   width: auto;

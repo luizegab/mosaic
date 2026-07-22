@@ -543,7 +543,10 @@
     "availableLanguagesHelp": "Los visitantes pueden cambiar entre los idiomas que actives aquí.",
     "previewDevice": "Dispositivo de vista previa",
     "deviceDesktop": "Escritorio",
-    "deviceMobile": "Móvil"
+    "deviceMobile": "Móvil",
+    "logoPlacement": "Ubicación del logo",
+    "placementTop": "Arriba del encabezado",
+    "placementBottom": "Abajo del encabezado"
   },
   "questionTypes": {
     "text": "Texto corto",
