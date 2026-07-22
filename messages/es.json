@@ -290,6 +290,8 @@
     "add": "Añadir",
     "roleGranted": "Rol concedido. Se está enviando un correo de notificación.",
     "inviteSentPending": "Invitación enviada. El rol se aplicará automáticamente cuando inicie sesión por primera vez.",
+    "inviteRecordedNoEmail": "Invitación registrada, pero no se pudo enviar el correo de notificación. Revisa la configuración de SMTP.",
+    "roleGrantedNoEmail": "Rol concedido, pero no se pudo enviar el correo de notificación. Revisa la configuración de SMTP.",
     "eventCode": "Código del evento",
     "eventCodeHelp": "Comparte este código para que otras personas puedan solicitar unirse a este evento.",
     "copy": "Copiar",

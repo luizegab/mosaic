@@ -290,6 +290,8 @@
     "add": "Add",
     "roleGranted": "Role granted. A notification email is on its way.",
     "inviteSentPending": "Invitation sent. The role will be applied automatically when they first sign in.",
+    "inviteRecordedNoEmail": "Invitation recorded, but the notification email couldn't be sent. Check the SMTP settings.",
+    "roleGrantedNoEmail": "Role granted, but the notification email couldn't be sent. Check the SMTP settings.",
     "eventCode": "Event code",
     "eventCodeHelp": "Share this code so people can request to join this event.",
     "copy": "Copy",

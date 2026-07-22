@@ -290,6 +290,8 @@
     "add": "Ajouter",
     "roleGranted": "Rôle attribué. Un e-mail de notification est en cours d'envoi.",
     "inviteSentPending": "Invitation envoyée. Le rôle sera appliqué automatiquement lors de sa première connexion.",
+    "inviteRecordedNoEmail": "Invitation enregistrée, mais l'e-mail de notification n'a pas pu être envoyé. Vérifiez la configuration SMTP.",
+    "roleGrantedNoEmail": "Rôle attribué, mais l'e-mail de notification n'a pas pu être envoyé. Vérifiez la configuration SMTP.",
     "eventCode": "Code de l'événement",
     "eventCodeHelp": "Partagez ce code pour que d'autres puissent demander à rejoindre cet événement.",
     "copy": "Copier",
