@@ -114,14 +114,15 @@ export function EventSettingsForm({ event, initialTypes, forms }) {
 
   async function setStatus(status) {
     // A published event with no published form leaves registrants on a
-    // dead-end wizard (pick single/group, then no options). Require at least
-    // one form with a published version before the event can go live.
+    // dead-end wizard (pick single/group, then no options). Require the
+    // creator to have published a form THEMSELVES — the default form
+    // auto-published at creation is only a fallback and doesn't count.
     if (status === 'published') {
       const { count } = await supabase
         .from('forms')
         .select('id', { count: 'exact', head: true })
         .eq('event_id', event.id)
-        .not('current_version_id', 'is', null)
+        .eq('creator_published', true)
       if (!count) {
         setPublishError(t('publishNeedsForm'))
         return

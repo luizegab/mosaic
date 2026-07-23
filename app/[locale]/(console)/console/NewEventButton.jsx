@@ -122,7 +122,13 @@ export function NewEventButton({ label }) {
           .from('form_versions')
           .update({ definition: { questions: defaultFormQuestions() } })
           .eq('id', versionId)
-        await supabase.rpc('publish_form_version', { p_version_id: versionId })
+        // p_creator_published:false — this failsafe publish keeps a fallback
+        // form available but must NOT satisfy the "creator published a form"
+        // guard; the creator still has to publish a form themselves.
+        await supabase.rpc('publish_form_version', {
+          p_version_id: versionId,
+          p_creator_published: false,
+        })
       }
       await supabase.from('participant_types').insert({
         event_id: event.id,
