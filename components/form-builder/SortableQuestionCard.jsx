@@ -14,6 +14,7 @@ export function SortableQuestionCard({
   locale,
   defaultLocale,
   typeLabel,
+  participantTypes = [],
   selected,
   onSelect,
   onRemove,
@@ -23,6 +24,13 @@ export function SortableQuestionCard({
     useSortable({ id: q.id })
 
   const label = lt(q.label, locale, defaultLocale)
+  // Show the human type names in the summary, not the internal keys.
+  const typeNames = (q.participantTypes ?? [])
+    .map((k) => {
+      const pt = participantTypes.find((p) => p.key === k)
+      return pt ? lt(pt.name, locale, defaultLocale) || k : k
+    })
+    .join(', ')
   // Unlabeled questions still need something visible to click on.
   const previewQuestion = label ? q : { ...q, label: { [locale]: '…' } }
 
@@ -62,7 +70,7 @@ export function SortableQuestionCard({
         <span className={styles.questionMeta}>
           {typeLabel}
           {q.visibleIf?.rules?.length ? ' · ⑂' : ''}
-          {q.participantTypes?.length ? ` · ${q.participantTypes.join(', ')}` : ''}
+          {q.participantTypes?.length ? ` · ${typeNames}` : ''}
           {q.type === 'date' && (
             <>
               {' '}

@@ -379,15 +379,10 @@ export function EventSettingsForm({ event, initialTypes, forms }) {
         <div className={styles.typeList}>
           {types.map((pt) => (
             <div key={pt.id} className={styles.typeRow}>
-              <Field label={t('typeKey')}>
-                {({ id }) => (
-                  <Input
-                    id={id}
-                    value={pt.key}
-                    onChange={(e) => updateType(pt.id, { key: e.target.value })}
-                  />
-                )}
-              </Field>
+              {/* `key` is a stable internal identifier (referenced by form
+                  visibility rules and the registration API) — auto-generated on
+                  create and never shown to organizers, who identify types by
+                  name everywhere. */}
               <Field label={`${t('typeName')} (${locale})`}>
                 {({ id }) => (
                   <Input

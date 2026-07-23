@@ -249,6 +249,7 @@ export function FormBuilder({
                   locale={locale}
                   defaultLocale={defaultLocale}
                   typeLabel={tq(q.type)}
+                  participantTypes={participantTypes}
                   selected={q.id === selectedId}
                   onSelect={() => store.select(q.id)}
                   onRemove={() => store.removeQuestion(q.id)}
