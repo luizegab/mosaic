@@ -1271,18 +1271,22 @@ export function EventPageEditor({ initialEvent }) {
             <p className="field-help">{t('imageSideHelp')}</p>
           </div>
         )}
-        <input ref={coverInputRef} type="file" accept="image/*" hidden onChange={onCoverFile} />
+        <input ref={coverInputRef} type="file" accept="image/*,video/*" hidden onChange={onCoverFile} />
         {event.cover_image_path && (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            className={styles.panelThumb}
-            src={eventMediaUrl(event.cover_image_path)}
-            alt=""
-          />
+          /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(event.cover_image_path) ? (
+            <video className={styles.panelThumb} src={eventMediaUrl(event.cover_image_path)} controls style={{ width: '100%', maxHeight: '150px', objectFit: 'contain' }} />
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              className={styles.panelThumb}
+              src={eventMediaUrl(event.cover_image_path)}
+              alt=""
+            />
+          )
         )}
         <div className={styles.panelRow}>
           <Button variant="secondary" size="sm" onClick={() => coverInputRef.current?.click()}>
-            {event.cover_image_path ? t('changeImage') : t('uploadImage')}
+            {event.cover_image_path ? t('changeImageOrVideo') : t('uploadImageOrVideo')}
           </Button>
           {event.cover_image_path && (
             <Button variant="ghost" size="sm" onClick={() => patchEvent({ cover_image_path: null })}>

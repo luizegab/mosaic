@@ -223,6 +223,7 @@ export function EventPageView({
   const closed = closesAt != null && now > closesAt
 
   const coverUrl = eventMediaUrl(event.cover_image_path)
+  const coverIsVideo = event.cover_image_path && /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(event.cover_image_path)
   const name = L(event.name)
   const description = L(event.description)
   const location = L(event.location)
@@ -677,8 +678,12 @@ export function EventPageView({
             <div className={styles.heroSplitText}>{heroBody}</div>
             <div className={styles.heroSplitMedia}>
               {coverUrl ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={coverUrl} alt="" style={imgAdjust(hero, 'cover')} />
+                coverIsVideo ? (
+                  <video src={coverUrl} autoPlay loop muted playsInline style={imgAdjust(hero, 'cover')} />
+                ) : (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={coverUrl} alt="" style={imgAdjust(hero, 'cover')} />
+                )
               ) : (
                 <div className={styles.heroSplitPlaceholder} aria-hidden="true" />
               )}
@@ -699,8 +704,12 @@ export function EventPageView({
               data-custom-overlay={heroTint ? '' : undefined}
               aria-hidden="true"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={coverUrl} alt="" style={imgAdjust(hero, 'cover')} />
+              {coverIsVideo ? (
+                <video src={coverUrl} autoPlay loop muted playsInline style={imgAdjust(hero, 'cover')} />
+              ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={coverUrl} alt="" style={imgAdjust(hero, 'cover')} />
+              )}
             </div>
           )}
           {coverUrl && heroTint && (
