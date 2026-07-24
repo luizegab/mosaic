@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { lt, eventLocales } from '@/lib/i18n/locales'
 import { formatEventDate, formatEventDateRange } from '@/lib/dates'
 import { eventMediaUrl } from '@/lib/storage'
+import { externalHref } from '@/lib/url'
 import { StatIcon } from './stat-icons'
 import { Countdown } from './Countdown'
 import { textStyle, TITLE_SIZES, FONT_FAMILIES } from './text-style'
@@ -605,8 +606,8 @@ export function EventPageView({
             {contact.name && <span>{contact.name}</span>}
             {contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
             {contact.phone && <a href={`tel:${contact.phone}`}>{contact.phone}</a>}
-            {contact.website && (
-              <a href={contact.website} target="_blank" rel="noreferrer">
+            {externalHref(contact.website) && (
+              <a href={externalHref(contact.website)} target="_blank" rel="noreferrer">
                 {contact.website}
               </a>
             )}
