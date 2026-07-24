@@ -415,8 +415,11 @@ export function EventPageView({
   const sectionNodes = {
     about: showAbout && (
       <Section section="about" className={styles.about} style={sectionBg(about)} {...sectionProps}>
-        <div className={`container ${styles.aboutGrid}`}>
-          <div className={styles.aboutText}>
+        <div
+          className={`container ${styles.aboutGrid}`}
+          data-no-media={!(aboutVideo || about.image_path) ? '' : undefined}
+        >
+          <div>
             {heading(about, t('aboutDefault'))}
             {L(about.body) && <p className={styles.aboutBody}>{L(about.body)}</p>}
             {about.stats?.length > 0 && (
