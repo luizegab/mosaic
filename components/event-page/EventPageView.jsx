@@ -296,7 +296,12 @@ export function EventPageView({
     isCustom(code) ? `/${locale}/events/${eventSlug}?lang=${code}` : `/${code}/events/${eventSlug}`
 
   const heroTopBar = (logoUrl || showLangSwitch) && (
-    <div className={styles.heroTopBar} data-logo-pos={logoPos}>
+    <div
+      className={styles.heroTopBar}
+      data-logo-pos={logoPos}
+      data-bottom={logoAtBottom ? '' : undefined}
+      data-lang-side={heroVariant === 'split' && hero.image_side === 'left' ? 'left' : 'right'}
+    >
       {logoUrl ? (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img className={styles.heroLogo} src={logoUrl} alt="" />
@@ -650,7 +655,7 @@ export function EventPageView({
           dataHasBg={!!theme.hero_bg}
           {...sectionProps}
         >
-          {!logoAtBottom && heroTopBar}
+          {heroTopBar}
           <div className={styles.heroSplitInner} data-image-side={hero.image_side === 'left' ? 'left' : 'right'}>
             <div className={styles.heroSplitText}>{heroBody}</div>
             <div className={styles.heroSplitMedia}>
@@ -662,7 +667,6 @@ export function EventPageView({
               )}
             </div>
           </div>
-          {logoAtBottom && heroTopBar}
         </Section>
       ) : (
         <Section
@@ -685,14 +689,13 @@ export function EventPageView({
           {coverUrl && heroTint && (
             <div className={styles.heroTint} style={{ background: heroTint }} aria-hidden="true" />
           )}
-          {!logoAtBottom && heroTopBar}
+          {heroTopBar}
           <div
             className={`container ${styles.heroInner}`}
             data-align={theme.title_align || undefined}
           >
             {heroBody}
           </div>
-          {logoAtBottom && heroTopBar}
         </Section>
       )}
 
