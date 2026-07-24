@@ -1239,6 +1239,20 @@ export function EventPageEditor({ initialEvent }) {
             <option value="split">{t('heroLayoutSplit')}</option>
           </NativeSelect>
         </div>
+        {content.theme?.hero_variant === 'split' && (
+          <div className={styles.colorField}>
+            <span className="field-label">{t('imageSide')}</span>
+            <NativeSelect
+              value={hero.image_side ?? 'right'}
+              onChange={(e) => patchContent('hero', { image_side: e.target.value })}
+              aria-label={t('imageSide')}
+            >
+              <option value="right">{t('imageSideRight')}</option>
+              <option value="left">{t('imageSideLeft')}</option>
+            </NativeSelect>
+            <p className="field-help">{t('imageSideHelp')}</p>
+          </div>
+        )}
         <input ref={coverInputRef} type="file" accept="image/*" hidden onChange={onCoverFile} />
         {event.cover_image_path && (
           /* eslint-disable-next-line @next/next/no-img-element */

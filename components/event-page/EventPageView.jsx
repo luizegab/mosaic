@@ -651,7 +651,7 @@ export function EventPageView({
           {...sectionProps}
         >
           {!logoAtBottom && heroTopBar}
-          <div className={`container ${styles.heroSplitInner}`}>
+          <div className={styles.heroSplitInner} data-image-side={hero.image_side === 'left' ? 'left' : 'right'}>
             <div className={styles.heroSplitText}>{heroBody}</div>
             <div className={styles.heroSplitMedia}>
               {coverUrl ? (

@@ -572,7 +572,11 @@
     "cancel": "Cancel",
     "languageNamePlaceholder": "Language name (e.g. Portuguese)",
     "customLanguageHelp": "Custom languages: you fill in all the text yourself in a new tab. Fixed platform buttons stay in the default language.",
-    "countdownDivider": "Divider line above countdown"
+    "countdownDivider": "Divider line above countdown",
+    "imageSide": "Image Side",
+    "imageSideRight": "Image right, text left",
+    "imageSideLeft": "Image left, text right",
+    "imageSideHelp": "The image fills that whole half of the hero; the text takes the other half. For a consistent layout, upload a portrait-ish photo (e.g. 10×15 / 2:3)."
   },
   "questionTypes": {
     "text": "Short text",

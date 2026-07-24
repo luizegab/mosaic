@@ -806,6 +806,10 @@
     grid-template-columns: 1fr 1fr;
     min-height: 32rem;
   }
+  /* Image on the left → media takes the first column, text the second. */
+  .heroSplitInner[data-image-side='left'] .heroSplitMedia {
+    order: -1;
+  }
 }
 
 .heroSplitText {
