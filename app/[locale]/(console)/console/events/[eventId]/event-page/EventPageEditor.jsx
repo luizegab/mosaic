@@ -808,21 +808,6 @@ export function EventPageEditor({ initialEvent }) {
 
     return (
       <>
-        {/* ---- Reset ---- */}
-        <Button
-          variant="ghost"
-          size="sm"
-          style={{ width: '100%', marginBottom: 'var(--s-4)' }}
-          onClick={() => patchContent('theme', {
-            page_bg: undefined, text_color: undefined, title_color: undefined,
-            primary_color: undefined, accent_color: undefined, hero_bg: undefined,
-            hero_opacity: undefined, btn_bg: undefined, btn_text: undefined, btn_style: undefined,
-            body_font: undefined, title_font: undefined, title_size: undefined,
-            text_scale: undefined, radius: undefined, width: undefined, density: undefined,
-          })}
-        >
-          {t('resetToDefault')}
-        </Button>
 
         {/* ---- Colors & brand ---- */}
         <h4 className={styles.panelSubhead}>{t('groupColors')}</h4>
