@@ -372,6 +372,7 @@
     "sessionTitle": "Назва сесії",
     "sessionTime": "Дата і час (вільний текст)",
     "sessionDescription": "Опис",
+    "sessionColor": "Колір маркера",
     "addSession": "Додати сесію",
     "tierName": "Назва квитка",
     "tierPrice": "Ціна (напр. $499)",

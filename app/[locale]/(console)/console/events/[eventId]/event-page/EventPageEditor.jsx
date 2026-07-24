@@ -1801,6 +1801,14 @@ export function EventPageEditor({ initialEvent }) {
                   patchItem('agenda', it.id, { description: setLv(it.description, e.target.value) })
                 }
               />
+              <ColorField
+                label={t('sessionColor')}
+                addLabel={t('addColor')}
+                resetLabel={t('resetColor')}
+                value={it.color}
+                defaultValue={isDark ? '#ffffff' : '#000000'}
+                onChange={(color) => patchItem('agenda', it.id, { color: color ?? undefined })}
+              />
             </div>
             <Button variant="ghost" size="sm" onClick={() => removeItem('agenda', it.id)}>
               ✕

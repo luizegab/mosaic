@@ -372,6 +372,7 @@
     "sessionTitle": "Titre de la session",
     "sessionTime": "Date et heure (texte libre)",
     "sessionDescription": "Description",
+    "sessionColor": "Couleur de la puce",
     "addSession": "Ajouter une session",
     "tierName": "Nom du billet",
     "tierPrice": "Prix (ex. 499 €)",

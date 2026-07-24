@@ -372,6 +372,7 @@
     "sessionTitle": "Session Title",
     "sessionTime": "Date and Time (Free Text)",
     "sessionDescription": "Description",
+    "sessionColor": "Marker Color",
     "addSession": "Add Session",
     "tierName": "Ticket Name",
     "tierPrice": "Price (e.g. $499)",

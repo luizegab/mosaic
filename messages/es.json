@@ -372,6 +372,7 @@
     "sessionTitle": "Título de la sesión",
     "sessionTime": "Fecha y hora (texto libre)",
     "sessionDescription": "Descripción",
+    "sessionColor": "Color de la viñeta",
     "addSession": "Añadir sesión",
     "tierName": "Nombre de la entrada",
     "tierPrice": "Precio (p. ej. $499)",

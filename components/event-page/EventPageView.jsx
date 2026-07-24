@@ -535,7 +535,7 @@ export function EventPageView({
             <ol className={styles.agendaList}>
               {agenda.items.map((item) => (
                 <li key={item.id} className={styles.agendaItem}>
-                  <div className={styles.agendaMarker} aria-hidden="true" />
+                  <div className={styles.agendaMarker} style={item.color ? { background: item.color } : undefined} aria-hidden="true" />
                   <div className={styles.agendaBody}>
                     <h3>{L(item.title)}</h3>
                     {L(item.time) && <p className={styles.agendaTime}>{L(item.time)}</p>}
