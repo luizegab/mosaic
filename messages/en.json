@@ -587,7 +587,8 @@
     "addLanguagesInSettings": "Add or manage languages in Settings",
     "languages": "Languages",
     "languagesHelp": "Choose which languages this event and its registration form are offered in. Attendees can switch between them; the default is used when a translation is missing.",
-    "defaultLanguageHelp": "Used as a fallback wherever a translation is missing."
+    "defaultLanguageHelp": "Used as a fallback wherever a translation is missing.",
+    "translateSourceUnsupported": "Auto-translate needs the default language to be English, Spanish, French, Russian or Ukrainian."
   },
   "questionTypes": {
     "text": "Short text",

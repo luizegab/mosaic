@@ -1,7 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useLocale, useTranslations } from 'next-intl'
+import { useLocale, useTranslations, NextIntlClientProvider } from 'next-intl'
+import enMessages from '@/messages/en.json'
+import esMessages from '@/messages/es.json'
+import frMessages from '@/messages/fr.json'
+import ruMessages from '@/messages/ru.json'
+import ukMessages from '@/messages/uk.json'
 import { Link, useRouter } from '@/lib/i18n/navigation'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import { LOCALES, LOCALE_NAMES, eventLocales } from '@/lib/i18n/locales'
@@ -65,34 +70,36 @@ const THEME_PRESETS = {
 // Localized fields are stored as {en: "...", es: "..."} maps. These helpers
 // walk the content, gather source-language strings, and write translations
 // back into empty target-language slots (never overwriting existing text).
-const LOCALE_SET = new Set(LOCALES)
-
-function isLocaleMap(v) {
+// A locale map is an object whose keys are ALL valid language codes. `valid`
+// must include the event's custom-language codes too — otherwise a field that
+// already has a custom-language value (e.g. {en, th}) is wrongly rejected and
+// silently skipped by the translator, leaving other languages empty.
+function isLocaleMap(v, valid) {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return false
   const keys = Object.keys(v)
   return (
     keys.length > 0 &&
-    keys.every((k) => LOCALE_SET.has(k)) &&
+    keys.every((k) => valid.has(k)) &&
     Object.values(v).every((x) => x == null || typeof x === 'string')
   )
 }
 
-function collectSourceStrings(node, source, out) {
-  if (isLocaleMap(node)) {
+function collectSourceStrings(node, source, out, valid) {
+  if (isLocaleMap(node, valid)) {
     const s = node[source]
     if (s && s.trim()) out.add(s)
     return
   }
-  if (Array.isArray(node)) node.forEach((n) => collectSourceStrings(n, source, out))
+  if (Array.isArray(node)) node.forEach((n) => collectSourceStrings(n, source, out, valid))
   else if (node && typeof node === 'object') {
-    Object.values(node).forEach((n) => collectSourceStrings(n, source, out))
+    Object.values(node).forEach((n) => collectSourceStrings(n, source, out, valid))
   }
 }
 
 // dict: { [target]: Map(sourceString -> translated) }. Returns a new node with
 // empty target slots filled.
-function applyTranslations(node, source, targets, dict) {
-  if (isLocaleMap(node)) {
+function applyTranslations(node, source, targets, dict, valid) {
+  if (isLocaleMap(node, valid)) {
     const s = node[source]
     if (!s || !s.trim()) return node
     const next = { ...node }
@@ -104,10 +111,10 @@ function applyTranslations(node, source, targets, dict) {
     }
     return next
   }
-  if (Array.isArray(node)) return node.map((n) => applyTranslations(n, source, targets, dict))
+  if (Array.isArray(node)) return node.map((n) => applyTranslations(n, source, targets, dict, valid))
   if (node && typeof node === 'object') {
     const o = {}
-    for (const [k, v] of Object.entries(node)) o[k] = applyTranslations(v, source, targets, dict)
+    for (const [k, v] of Object.entries(node)) o[k] = applyTranslations(v, source, targets, dict, valid)
     return o
   }
   return node
@@ -136,6 +143,17 @@ const SIZE_OPTIONS = ['', 'sm', 'md', 'lg', 'xl']
 
 function newId() {
   return Math.random().toString(36).slice(2, 10)
+}
+
+// Message catalogs so the console preview can render fixed UI strings
+// (Register, DAYS, When/Where…) in the previewed language, not just the
+// console's own language.
+const PREVIEW_MESSAGES = {
+  en: enMessages,
+  es: esMessages,
+  fr: frMessages,
+  ru: ruMessages,
+  uk: ukMessages,
 }
 
 function useIsDarkMode() {
@@ -400,7 +418,20 @@ export function EventPageEditor({ initialEvent }) {
   // language's text. Applied to state; the user then saves.
   async function translateAll(availableLocales) {
     const source = event.default_locale
-    const targets = availableLocales.filter((l) => l !== source)
+    const customCodes = Array.isArray(content.i18n?.custom)
+      ? content.i18n.custom.map((c) => c.code)
+      : []
+    // All valid language keys (built-ins + this event's custom codes) so the
+    // walker recognizes every localized field, even ones with custom values.
+    const valid = new Set([...LOCALES, ...customCodes])
+    // Google can only translate to the 5 built-in locales; custom languages
+    // are filled manually, so they're never auto-targets.
+    const targets = availableLocales.filter((l) => l !== source && LOCALES.includes(l))
+    if (!LOCALES.includes(source)) {
+      setTranslateState('error')
+      setTranslateMsg(t('translateSourceUnsupported'))
+      return
+    }
     if (!targets.length) {
       setTranslateState('error')
       setTranslateMsg(t('translateNoTargets'))
@@ -413,7 +444,7 @@ export function EventPageEditor({ initialEvent }) {
       page_content: event.page_content ?? {},
     }
     const set = new Set()
-    collectSourceStrings(bundle, source, set)
+    collectSourceStrings(bundle, source, set, valid)
     const strings = [...set]
     if (!strings.length) {
       setTranslateState('error')
@@ -443,7 +474,7 @@ export function EventPageEditor({ initialEvent }) {
           dict[tgt] = m
         }
       }
-      const out = applyTranslations(bundle, source, targets, dict)
+      const out = applyTranslations(bundle, source, targets, dict, valid)
       setEvent((prev) => ({
         ...prev,
         name: out.name,
@@ -2166,13 +2197,25 @@ export function EventPageEditor({ initialEvent }) {
       <div className={`${styles.split} ${panelSection ? styles.splitOpen : ''}`}>
         <section className={styles.frame} data-device={previewDevice}>
           <div className={styles.frameInner}>
-            <EventPageView
-              event={event}
-              locale={LOCALES.includes(previewLocale) ? previewLocale : event.default_locale}
-              contentLocale={previewLocale}
-              editable
-              onEditSection={(s) => setPanelSection(s)}
-            />
+            {(() => {
+              // Render fixed UI strings in the previewed language (built-ins);
+              // custom languages fall back to the default locale's strings.
+              const uiLoc = LOCALES.includes(previewLocale) ? previewLocale : event.default_locale
+              return (
+                <NextIntlClientProvider
+                  locale={uiLoc}
+                  messages={PREVIEW_MESSAGES[uiLoc] ?? PREVIEW_MESSAGES.en}
+                >
+                  <EventPageView
+                    event={event}
+                    locale={uiLoc}
+                    contentLocale={previewLocale}
+                    editable
+                    onEditSection={(s) => setPanelSection(s)}
+                  />
+                </NextIntlClientProvider>
+              )
+            })()}
           </div>
         </section>
 

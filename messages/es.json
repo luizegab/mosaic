@@ -587,7 +587,8 @@
     "addLanguagesInSettings": "Añade o gestiona idiomas en Configuración",
     "languages": "Idiomas",
     "languagesHelp": "Elige en qué idiomas se ofrecen este evento y su formulario de inscripción. Los asistentes pueden cambiar entre ellos; el idioma predeterminado se usa cuando falta una traducción.",
-    "defaultLanguageHelp": "Se usa como alternativa cuando falta una traducción."
+    "defaultLanguageHelp": "Se usa como alternativa cuando falta una traducción.",
+    "translateSourceUnsupported": "La traducción automática requiere que el idioma predeterminado sea inglés, español, francés, ruso o ucraniano."
   },
   "questionTypes": {
     "text": "Texto corto",
