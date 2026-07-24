@@ -1,24 +1,24 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
-import { getTranslateLanguages } from '@/lib/i18n/translate-languages'
+import { LOCALES } from '@/lib/i18n/locales'
+import { applyLocalizedTranslations, collectLocalizedStrings } from '@/lib/form-localization'
 
-// Google Cloud Translation v2 HTML-escapes some characters even in text mode.
-function unescapeHtml(s) {
-  return s
+const SUPPORTED = new Set(LOCALES)
+
+function unescapeHtml(value) {
+  return value
     .replace(/&amp;/g, '&')
     .replace(/&#39;/g, "'")
     .replace(/&quot;/g, '"')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
 }
 
-// Translate a batch of strings via Google Cloud Translation (v2, API key).
-// Google accepts up to 128 text segments per request, so chunk to be safe.
 async function translateBatch(strings, source, target, apiKey) {
   const out = []
-  for (let i = 0; i < strings.length; i += 100) {
-    const chunk = strings.slice(i, i + 100)
+  for (let index = 0; index < strings.length; index += 100) {
+    const chunk = strings.slice(index, index + 100)
     const res = await fetch(
       `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
       {
@@ -36,13 +36,12 @@ async function translateBatch(strings, source, target, apiKey) {
     if (!Array.isArray(items) || items.length !== chunk.length) {
       throw new Error('Unexpected translation response shape')
     }
-    for (const it of items) out.push(unescapeHtml(it.translatedText ?? ''))
+    for (const item of items) out.push(unescapeHtml(item.translatedText ?? ''))
   }
   return out
 }
 
 export async function POST(request) {
-  // Require an authenticated organizer to avoid anonymous API abuse/cost.
   const supabase = await getSupabaseServerClient()
   const {
     data: { user },
@@ -63,38 +62,50 @@ export async function POST(request) {
     return NextResponse.json({ error: 'bad_request' }, { status: 400 })
   }
 
-  // Gate against the languages Google actually supports (fetched + cached), so
-  // any organizer-picked language works without maintaining a hardcoded list.
-  const supported = new Set((await getTranslateLanguages()).map((l) => l.code))
-
-  const { strings, source, targets } = body ?? {}
+  const { definition, source, targets } = body ?? {}
   if (
-    !Array.isArray(strings) ||
+    !definition ||
+    typeof definition !== 'object' ||
     typeof source !== 'string' ||
     !Array.isArray(targets) ||
-    !supported.has(source)
+    !SUPPORTED.has(source)
   ) {
     return NextResponse.json({ error: 'bad_request' }, { status: 400 })
   }
-  if (strings.length === 0 || targets.length === 0) {
-    return NextResponse.json({ translations: {} })
+
+  const targetList = targets.filter((target) => SUPPORTED.has(target) && target !== source)
+  if (targetList.length === 0) {
+    return NextResponse.json({ translatedDefinition: definition })
   }
-  if (strings.length > 300) {
-    return NextResponse.json({ error: 'too_many_strings' }, { status: 400 })
+
+  const sourceStrings = new Set()
+  collectLocalizedStrings(definition, source, sourceStrings)
+  const strings = [...sourceStrings]
+  if (strings.length === 0) {
+    return NextResponse.json({ translatedDefinition: definition })
   }
 
   const translations = {}
   try {
-    for (const target of targets) {
-      if (!supported.has(target) || target === source) continue
+    for (const target of targetList) {
       translations[target] = await translateBatch(strings, source, target, apiKey)
     }
-  } catch (e) {
+  } catch (error) {
     return NextResponse.json(
-      { error: 'translation_failed', detail: String(e.message) },
+      { error: 'translation_failed', detail: String(error?.message ?? error) },
       { status: 502 }
     )
   }
 
-  return NextResponse.json({ translations })
+  const dict = {}
+  for (const target of targetList) {
+    const translated = translations[target]
+    const map = new Map()
+    strings.forEach((string, index) => map.set(string, translated[index]))
+    dict[target] = map
+  }
+
+  return NextResponse.json({
+    translatedDefinition: applyLocalizedTranslations(definition, source, targetList, dict),
+  })
 }
