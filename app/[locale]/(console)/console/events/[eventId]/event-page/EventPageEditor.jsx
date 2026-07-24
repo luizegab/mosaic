@@ -852,22 +852,11 @@ export function EventPageEditor({ initialEvent }) {
 
     return (
       <>
-        {/* ---- Presets ---- */}
-        <h4 className={styles.panelSubhead}>{t('themePresets')}</h4>
-        <div className={styles.panelRow}>
-          <Button variant="secondary" size="sm" onClick={() => setTheme(THEME_PRESETS.light)}>
-            {t('presetLight')}
-          </Button>
-          <Button variant="secondary" size="sm" onClick={() => setTheme(THEME_PRESETS.dark)}>
-            {t('presetDark')}
-          </Button>
-          <Button variant="secondary" size="sm" onClick={() => setTheme(THEME_PRESETS.brand)}>
-            {t('presetBrand')}
-          </Button>
-        </div>
+        {/* ---- Reset ---- */}
         <Button
           variant="ghost"
           size="sm"
+          style={{ width: '100%', marginBottom: 'var(--s-4)' }}
           onClick={() => patchContent('theme', {
             page_bg: undefined, text_color: undefined, title_color: undefined,
             primary_color: undefined, accent_color: undefined, hero_bg: undefined,
