@@ -81,13 +81,14 @@ function PencilIcon() {
 // them a new component identity each render, forcing React to remount the
 // whole section subtree on every parent update.
 
-function Section({ id, section, className, style, dataFlat, editable, onEditSection, editLabel, children }) {
+function Section({ id, section, className, style, dataFlat, dataHasBg, editable, onEditSection, editLabel, children }) {
   return (
     <section
       id={id}
       className={`${className ?? ''} ${editable ? styles.editable : ''}`}
       style={style}
       data-flat-hero={dataFlat ? '' : undefined}
+      data-has-bg={dataHasBg ? '' : undefined}
     >
       {children}
       {editable && (
@@ -240,6 +241,8 @@ export function EventPageView({
   // cover image; with no image the color fills the hero solid (a translucent
   // fill would just blend with the page behind it and look washed out/white).
   const heroTint = coverUrl ? hexToRgba(theme.hero_bg, theme.hero_opacity) : null
+  // Split hero: the chosen hero color (with opacity) fills the text side.
+  const splitBg = theme.hero_bg ? hexToRgba(theme.hero_bg, theme.hero_opacity) : undefined
 
   // With no cover image, let the hero adopt the chosen colors so theme changes
   // are visible at the very top of the page (otherwise it keeps its default
@@ -377,7 +380,10 @@ export function EventPageView({
         )}
       </div>
       {hero.show_countdown !== false && !closed && countdownTarget && (
-        <div className={styles.heroCountdown}>
+        <div
+          className={styles.heroCountdown}
+          data-no-divider={hero.countdown_divider === false ? '' : undefined}
+        >
           <Countdown
             targetIso={countdownTarget}
             tone={countdownTone}
@@ -637,7 +643,13 @@ export function EventPageView({
     >
       {/* ---- Hero ---- */}
       {heroVariant === 'split' ? (
-        <Section section="hero" className={styles.heroSplit} {...sectionProps}>
+        <Section
+          section="hero"
+          className={styles.heroSplit}
+          style={splitBg ? { background: splitBg } : undefined}
+          dataHasBg={!!theme.hero_bg}
+          {...sectionProps}
+        >
           {!logoAtBottom && heroTopBar}
           <div className={`container ${styles.heroSplitInner}`}>
             <div className={styles.heroSplitText}>{heroBody}</div>

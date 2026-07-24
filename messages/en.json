@@ -571,7 +571,8 @@
     "addLanguageConfirm": "Add",
     "cancel": "Cancel",
     "languageNamePlaceholder": "Language name (e.g. Portuguese)",
-    "customLanguageHelp": "Custom languages: you fill in all the text yourself in a new tab. Fixed platform buttons stay in the default language."
+    "customLanguageHelp": "Custom languages: you fill in all the text yourself in a new tab. Fixed platform buttons stay in the default language.",
+    "countdownDivider": "Divider line above countdown"
   },
   "questionTypes": {
     "text": "Short text",

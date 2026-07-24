@@ -1282,7 +1282,7 @@ export function EventPageEditor({ initialEvent }) {
           defaultValue={isDark ? '#000000' : '#ffffff'}
           onChange={(c) => setTheme({ hero_bg: c ?? undefined })}
         />
-        {theme.hero_bg && event.cover_image_path && (
+        {theme.hero_bg && (event.cover_image_path || theme.hero_variant === 'split') && (
           <div className={styles.colorField}>
             <span className="field-label">
               {t('heroOpacity')}: {theme.hero_opacity ?? 100}%
@@ -1426,6 +1426,11 @@ export function EventPageEditor({ initialEvent }) {
             >
               {t('useTitleColor')}
             </Button>
+            <CheckboxRow
+              label={t('countdownDivider')}
+              checked={hero.countdown_divider !== false}
+              onCheckedChange={(checked) => patchContent('hero', { countdown_divider: !!checked })}
+            />
           </>
         )}
       </>

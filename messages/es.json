@@ -571,7 +571,8 @@
     "addLanguageConfirm": "Añadir",
     "cancel": "Cancelar",
     "languageNamePlaceholder": "Nombre del idioma (p. ej. Portugués)",
-    "customLanguageHelp": "Idiomas personalizados: tú escribes todo el texto en una pestaña nueva. Los botones fijos de la plataforma quedan en el idioma predeterminado."
+    "customLanguageHelp": "Idiomas personalizados: tú escribes todo el texto en una pestaña nueva. Los botones fijos de la plataforma quedan en el idioma predeterminado.",
+    "countdownDivider": "Línea divisoria sobre la cuenta regresiva"
   },
   "questionTypes": {
     "text": "Texto corto",
