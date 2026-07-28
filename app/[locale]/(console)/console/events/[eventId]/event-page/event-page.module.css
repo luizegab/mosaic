@@ -235,9 +235,32 @@
   font-size: var(--text-md);
 }
 
+/* Section title inside the customize panel. Clearly outranks the field labels
+   below it (which are text-sm / 600): larger, heavier, with more space above
+   and a short accent tick, so each group reads as its own section. */
 .panelSubhead {
-  margin: var(--s-2) 0 0;
-  font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: var(--s-5) 0 var(--s-3);
+  font-size: var(--text-md);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.panelSubhead::before {
+  content: '';
+  flex-shrink: 0;
+  width: 3px;
+  height: 0.95em;
+  border-radius: 2px;
+  background: var(--pine);
+}
+
+/* The first section title sits right under the tabs — no extra gap needed. */
+.panelBody > .panelSubhead:first-child {
+  margin-top: 0;
 }
 
 .panelRow {
