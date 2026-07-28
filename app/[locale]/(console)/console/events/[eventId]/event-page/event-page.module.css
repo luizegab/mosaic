@@ -236,13 +236,17 @@
 }
 
 /* Section title inside the customize panel. Clearly outranks the field labels
-   below it (which are text-sm / 600): larger, heavier, with more space above
-   and a short accent tick, so each group reads as its own section. */
+   below it (which are text-sm / 600): a tinted header band with a short accent
+   tick, larger heavier text, and space above, so each group reads as its own
+   section. */
 .panelSubhead {
   display: flex;
   align-items: center;
   gap: var(--s-2);
   margin: var(--s-5) 0 var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  background: var(--pine-tint);
+  border-radius: var(--r-sm);
   font-size: var(--text-md);
   font-weight: 700;
   letter-spacing: -0.01em;
