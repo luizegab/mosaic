@@ -2,7 +2,7 @@
 
 import { Fragment } from 'react'
 import { useTranslations } from 'next-intl'
-import { lt, eventLocales, localeName } from '@/lib/i18n/locales'
+import { lt, eventLocales, localeAcronym } from '@/lib/i18n/locales'
 import { LanguagePicker } from '@/components/ui'
 import { formatEventDate, formatEventDateRange } from '@/lib/dates'
 import { eventMediaUrl } from '@/lib/storage'
@@ -251,6 +251,11 @@ export function EventPageView({
   if (theme.accent_color) pageStyle['--ep-accent'] = theme.accent_color
   if (theme.btn_bg) pageStyle['--ep-btn-bg'] = theme.btn_bg
   if (theme.btn_text) pageStyle['--ep-btn-text'] = theme.btn_text
+  // Left unset the language switcher keeps tinting itself from the surrounding
+  // text, which is what makes it work over an arbitrary hero photo. These only
+  // override that when the organizer actually picks a colour.
+  if (theme.lang_bg) pageStyle['--ep-lang-bg'] = theme.lang_bg
+  if (theme.lang_text) pageStyle['--ep-lang-text'] = theme.lang_text
   if (theme.body_font && FONT_FAMILIES[theme.body_font]) {
     pageStyle.fontFamily = FONT_FAMILIES[theme.body_font]
   }
@@ -305,7 +310,10 @@ export function EventPageView({
   const eventSlug = event.slug
   // The dropdown has room for real names ("English", "Português") rather than
   // the bare codes a compact button row was limited to.
-  const langLabel = (code) => localeName(event, code)
+  // Attendees get the short code; the console's own language controls keep the
+  // full names. This renders the public page in both places, preview included,
+  // so the preview shows what a visitor will actually see.
+  const langLabel = (code) => localeAcronym(code)
   // Built-in locales get their own route; custom ones ride on the current
   // route locale via a ?lang= param (they aren't platform routes).
   const langHref = (code) => eventPageUrl({ slug: eventSlug, code, uiLocale: locale })

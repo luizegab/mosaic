@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocale, useTranslations, NextIntlClientProvider } from 'next-intl'
 import enMessages from '@/messages/en.json'
 import esMessages from '@/messages/es.json'
@@ -10,6 +10,11 @@ import ukMessages from '@/messages/uk.json'
 import { Link, useRouter } from '@/lib/i18n/navigation'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import { LOCALES, LOCALE_NAMES, eventLocales } from '@/lib/i18n/locales'
+import {
+  hasStaleTranslations,
+  retranslateDocument,
+  setLocalizedText,
+} from '@/lib/form-localization'
 import { eventMediaUrl } from '@/lib/storage'
 import {
   Button,
@@ -73,62 +78,6 @@ const THEME_PRESETS = {
     btn_bg: '#e8a33d',
     btn_text: '#2b1f08',
   },
-}
-
-// --- Machine translation of typed content -------------------------------
-// Localized fields are stored as {en: "...", es: "..."} maps. These helpers
-// walk the content, gather source-language strings, and write translations
-// back into empty target-language slots (never overwriting existing text).
-const LOCALE_SET = new Set(LOCALES)
-
-// `codes` bounds which keys count as language codes. It defaults to the
-// built-in locales, but callers pass the event's full set (built-ins + custom
-// codes) so a field that already has a custom-language slot ({en, es, sq}) is
-// still recognized as translatable instead of being skipped.
-function isLocaleMap(v, codes = LOCALE_SET) {
-  if (!v || typeof v !== 'object' || Array.isArray(v)) return false
-  const keys = Object.keys(v)
-  return (
-    keys.length > 0 &&
-    keys.every((k) => codes.has(k)) &&
-    Object.values(v).every((x) => x == null || typeof x === 'string')
-  )
-}
-
-function collectSourceStrings(node, source, out, codes = LOCALE_SET) {
-  if (isLocaleMap(node, codes)) {
-    const s = node[source]
-    if (s && s.trim()) out.add(s)
-    return
-  }
-  if (Array.isArray(node)) node.forEach((n) => collectSourceStrings(n, source, out, codes))
-  else if (node && typeof node === 'object') {
-    Object.values(node).forEach((n) => collectSourceStrings(n, source, out, codes))
-  }
-}
-
-// dict: { [target]: Map(sourceString -> translated) }. Returns a new node with
-// empty target slots filled.
-function applyTranslations(node, source, targets, dict, codes = LOCALE_SET) {
-  if (isLocaleMap(node, codes)) {
-    const s = node[source]
-    if (!s || !s.trim()) return node
-    const next = { ...node }
-    for (const tgt of targets) {
-      if (!next[tgt] || !next[tgt].trim()) {
-        const tr = dict[tgt]?.get(s)
-        if (tr) next[tgt] = tr
-      }
-    }
-    return next
-  }
-  if (Array.isArray(node)) return node.map((n) => applyTranslations(n, source, targets, dict, codes))
-  if (node && typeof node === 'object') {
-    const o = {}
-    for (const [k, v] of Object.entries(node)) o[k] = applyTranslations(v, source, targets, dict, codes)
-    return o
-  }
-  return node
 }
 
 // True for a stat value worth translating: a word like "Thailand". Pure
@@ -478,12 +427,20 @@ export function EventPageEditor({ initialEvent }) {
   }
 
   // Machine-translate the default language's text into the given target
-  // languages, filling only EMPTY slots (never overwriting typed text). Applied
-  // to editor state; the page is marked dirty only if something actually
-  // changed, so re-running on an already-translated language is a no-op. Runs
-  // automatically when the organizer switches languages (see the effect below),
-  // mirroring the form builder — no button. Success is silent; errors surface.
-  async function translateInto(targets) {
+  // languages. Only fields whose source text changed since they were last
+  // translated are sent (plus everything for a language that has no
+  // translations yet), so a second run after editing two headings costs two
+  // strings, not the page. Applied to editor state and marked dirty only when
+  // something actually changed; the organizer then saves.
+  //
+  // Runs automatically when the organizer switches languages (see the effect
+  // below), mirroring the form builder. That path stays silent on success so
+  // flipping between languages never nags; `announce` turns on the message and
+  // alert for the manual button.
+  //
+  // `force` ignores the bookkeeping and retranslates everything, including text
+  // a human typed — the way back from a hand-edit the organizer regrets.
+  async function translateInto(targets, { force = false, announce = false } = {}) {
     const source = event.default_locale
     const customCodes = Array.isArray(content.i18n?.custom)
       ? content.i18n.custom.map((c) => c.code)
@@ -491,7 +448,15 @@ export function EventPageEditor({ initialEvent }) {
     // Organizer-added languages come from the Google-supported list, so they
     // are valid auto-translate targets too. The API drops any it can't handle.
     const realTargets = targets.filter((l) => l && l !== source)
-    if (!realTargets.length) return
+    if (!realTargets.length) {
+      // Silent for the automatic path — switching to the default language has
+      // nothing to do and isn't an error.
+      if (announce) {
+        setTranslateState('error')
+        setTranslateMsg(t('translateNoTargets'))
+      }
+      return
+    }
     const bundle = {
       name: event.name,
       description: event.description,
@@ -500,43 +465,37 @@ export function EventPageEditor({ initialEvent }) {
       // so they translate too; numeric values stay strings and are left alone.
       page_content: normalizeStatValues(event.page_content ?? {}, source),
     }
-    // Recognize locale maps keyed by any of the event's languages — built-ins
-    // plus custom codes — so fields that already have a custom-language slot
-    // aren't skipped on subsequent translations.
-    const codes = new Set([...LOCALES, ...availableLocales, ...customCodes])
-    const set = new Set()
-    collectSourceStrings(bundle, source, set, codes)
-    const strings = [...set]
-    if (!strings.length) return
+
     setTranslateState('working')
     setTranslateMsg('')
+    let failure = null
     try {
-      const res = await fetch('/api/translate-event', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ strings, source, targets: realTargets }),
+      const { node: out, changed, translated } = await retranslateDocument(bundle, {
+        source,
+        targets: realTargets,
+        // The event's full language set, so provenance is adopted for every
+        // language at once rather than only this run's targets.
+        locales: [...availableLocales, ...customCodes],
+        force,
+        translate: async (requests) => {
+          const res = await fetch('/api/translate-event', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ requests, source }),
+          })
+          const data = await res.json().catch(() => ({}))
+          if (!res.ok) {
+            failure = data?.error === 'no_api_key' ? t('translateNoKey') : t('translateError')
+            throw new Error(data?.error ?? 'translate_failed')
+          }
+          return data.translations ?? {}
+        },
       })
-      const data = await res.json()
-      if (!res.ok) {
-        setTranslateState('error')
-        setTranslateMsg(data?.error === 'no_api_key' ? t('translateNoKey') : t('translateError'))
-        return
-      }
-      const dict = {}
-      for (const tgt of realTargets) {
-        const arr = data.translations?.[tgt]
-        if (Array.isArray(arr)) {
-          const m = new Map()
-          strings.forEach((s, i) => m.set(s, arr[i]))
-          dict[tgt] = m
-        }
-      }
-      const out = applyTranslations(bundle, source, realTargets, dict, codes)
-      const changed =
-        JSON.stringify(out.name) !== JSON.stringify(bundle.name) ||
-        JSON.stringify(out.description) !== JSON.stringify(bundle.description) ||
-        JSON.stringify(out.location) !== JSON.stringify(bundle.location) ||
-        JSON.stringify(out.page_content) !== JSON.stringify(bundle.page_content)
+
+      // Apply whenever anything changed, even with nothing translated: a first
+      // run over content that predates tracking only adopts provenance, and
+      // that bookkeeping MUST be saved. Drop it and the next run would re-adopt
+      // against the by-then-edited source, marking the stale translation fresh.
       if (changed) {
         setEvent((prev) => ({
           ...prev,
@@ -547,13 +506,59 @@ export function EventPageEditor({ initialEvent }) {
         }))
         markDirty()
       }
-      setTranslateState('idle')
-      setTranslateMsg('')
+      // The automatic language-switch path says nothing on success; only the
+      // manual button reports what it did.
+      if (!announce) {
+        setTranslateState('idle')
+        setTranslateMsg('')
+        return
+      }
+      setTranslateState('done')
+      if (translated === 0) {
+        // Either the page has no text yet, or every language already matches
+        // the current source text — the common case on a second click.
+        setTranslateMsg(t('translateUpToDate'))
+        return
+      }
+      setTranslateMsg(t('translateDone'))
+      window.alert(t('translateFinished'))
     } catch {
       setTranslateState('error')
-      setTranslateMsg(t('translateError'))
+      setTranslateMsg(failure ?? t('translateError'))
     }
   }
+
+  // A single-language event has nowhere to translate INTO. Distinct from "no
+  // fields changed", so the buttons can say which of the two it is.
+  const hasTranslateTargets = availableLocales.some((l) => l && l !== event.default_locale)
+
+  // Is anything out of date for the safe pass? Mirrors the bundle, targets and
+  // codes translateInto builds, so "modified" means exactly what a run would
+  // act on. Recomputed as the organizer edits.
+  const hasTranslateUpdates = useMemo(() => {
+    const source = event.default_locale
+    const customCodes = Array.isArray(content.i18n?.custom)
+      ? content.i18n.custom.map((c) => c.code)
+      : []
+    const targets = availableLocales.filter((l) => l && l !== source)
+    if (!targets.length) return false
+    const bundle = {
+      name: event.name,
+      description: event.description,
+      location: event.location,
+      page_content: normalizeStatValues(event.page_content ?? {}, source),
+    }
+    const codes = new Set([...LOCALES, ...availableLocales, ...customCodes])
+    return hasStaleTranslations(bundle, source, targets, codes)
+  }, [
+    event.name,
+    event.description,
+    event.location,
+    event.page_content,
+    event.default_locale,
+    availableLocales,
+    content.i18n?.custom,
+  ])
 
   // Functional updates: colors/text can change in quick succession, so always
   // derive from the latest state rather than a value captured at render time.
@@ -614,8 +619,12 @@ export function EventPageEditor({ initialEvent }) {
   }
 
   // Localized value helpers — edit the text for the previewed language.
+  // Typing into a NON-default language marks that field human-authored, so
+  // auto-translate stops overwriting it. Typing into the default language
+  // leaves the bookkeeping alone: that's what flags the field as modified.
   const lv = (map) => map?.[previewLocale] ?? ''
-  const setLv = (map, value) => ({ ...(map ?? {}), [previewLocale]: value })
+  const setLv = (map, value) =>
+    setLocalizedText(map, previewLocale, value, event.default_locale)
 
   // ---- persistence ---------------------------------------------------------
 
@@ -903,6 +912,12 @@ export function EventPageEditor({ initialEvent }) {
     const fg = theme.text_color || (isDark ? '#eceae4' : '#111111')
     const ratio = contrastRatio(fg, bg)
     const lowContrast = ratio != null && ratio < 4.5
+    // Same check for the language switcher, but only once BOTH of its colours
+    // are set: with one unset it tints itself from the hero text, and comparing
+    // against a placeholder would cry wolf about a pairing that never renders.
+    const langRatio =
+      theme.lang_bg && theme.lang_text ? contrastRatio(theme.lang_text, theme.lang_bg) : null
+    const langLowContrast = langRatio != null && langRatio < 4.5
 
     return (
       <>
@@ -1016,6 +1031,33 @@ export function EventPageEditor({ initialEvent }) {
             />
           )}
         </Field>
+
+        {/* ---- Language switcher ---- */}
+        <h4 className={styles.panelSubhead}>{t('langSwitcherStyle')}</h4>
+        <div className={styles.colorPair}>
+          <ColorField
+            label={t('langSwitcherBackground')}
+            addLabel={t('addColor')}
+            resetLabel={t('resetColor')}
+            value={theme.lang_bg}
+            defaultValue={isDark ? '#000000' : '#ffffff'}
+            onChange={(c) => setTheme({ lang_bg: c ?? undefined })}
+          />
+          <ColorField
+            label={t('langSwitcherTextColor')}
+            addLabel={t('addColor')}
+            resetLabel={t('resetColor')}
+            value={theme.lang_text}
+            defaultValue={isDark ? '#ffffff' : '#000000'}
+            onChange={(c) => setTheme({ lang_text: c ?? undefined })}
+          />
+        </div>
+        <p className="field-help">{t('langSwitcherHelp')}</p>
+        {langLowContrast && (
+          <p className={`alert alert-error ${styles.uploadNote}`}>
+            {t('contrastWarning', { ratio: langRatio.toFixed(1) })}
+          </p>
+        )}
 
         {/* ---- Typography ---- */}
         <h4 className={styles.panelSubhead}>{t('groupTypography')}</h4>
@@ -1150,8 +1192,66 @@ export function EventPageEditor({ initialEvent }) {
           {t('addLanguagesInSettings')}
         </Link>
         <p className="field-help">{t('autoTranslateHelp')}</p>
-        {translateState === 'error' && translateMsg && (
-          <p className={`alert alert-error ${styles.uploadNote}`}>{translateMsg}</p>
+        {/* Switching languages already translates in the background, but only
+            into the language being switched to. Both of these run every
+            language at once, on demand, and report what they did.
+
+            Two standing buttons rather than one that renames itself: the label
+            you clicked last time is the label you look for next time, and the
+            safe pass and the destructive redo are different enough decisions
+            that the organizer should pick between them, not have one offered.
+
+            hasTranslateUpdates comes from the same bundle translateInto builds,
+            so "modified" here means exactly what a run would act on. */}
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={translateState === 'working'}
+          onClick={() => {
+            // Say so rather than appearing to work and changing nothing.
+            if (!hasTranslateTargets) {
+              window.alert(t('translateNoTargets'))
+              return
+            }
+            if (!hasTranslateUpdates) {
+              window.alert(t('translateNoChanges'))
+              return
+            }
+            translateInto(availableLocales, { announce: true })
+          }}
+        >
+          {translateState === 'working' ? t('translating') : t('translateAll')}
+        </Button>
+        <p className="field-help">{t('translateAllHelp')}</p>
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={translateState === 'working'}
+          onClick={() => {
+            if (!hasTranslateTargets) {
+              window.alert(t('translateNoTargets'))
+              return
+            }
+            // Always destructive — it overwrites hand-written translations — so
+            // it always asks. When nothing is stale the prompt says that too,
+            // so a stray click can't be mistaken for a routine catch-up.
+            const prompt = hasTranslateUpdates
+              ? t('translateForceConfirm')
+              : t('translateForceNoChangesConfirm')
+            if (window.confirm(prompt)) {
+              translateInto(availableLocales, { force: true, announce: true })
+            }
+          }}
+        >
+          {t('translateForce')}
+        </Button>
+        <p className="field-help">{t('translateForceHelp')}</p>
+        {translateMsg && (
+          <p
+            className={`alert ${translateState === 'error' ? 'alert-error' : 'alert-success'} ${styles.uploadNote}`}
+          >
+            {translateMsg}
+          </p>
         )}
 
         {/* ---- Section order ---- */}
